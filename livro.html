@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livro · Conta-me Uma História</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      --table: #2a2521;
+      --sheet: #fbf6ec;
+      --sheet-edge: #e9dfcc;
+      --page-w: 520px;
+      --page-h: 740px;
+      --pad-t: 64px;
+      --pad-x: 54px;
+      --pad-b: 70px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: radial-gradient(ellipse at 50% 40%, #3a332d 0%, var(--table) 70%);
+      color: #efe6d6;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- Barra superior ---------- */
+
+    .reader-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+      font-size: 14px;
+      flex: none;
+    }
+
+    .reader-bar a { color: inherit; text-decoration: none; font-weight: 500; opacity: 0.85; }
+    .reader-bar a:hover { opacity: 1; }
+    .reader-bar .title { font-family: var(--font-display); font-size: 17px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reader-bar .count { font-variant-numeric: tabular-nums; opacity: 0.7; text-align: right; }
+    .reader-bar .side-r { display: flex; align-items: center; justify-content: flex-end; gap: 14px; min-width: 90px; }
+
+    /* Descarregar (EPUB / PDF) */
+    .dl { position: relative; }
+    .dl-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1.5px solid rgba(239,230,214,0.45);
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .dl-btn:hover, .dl-btn[aria-expanded="true"] { background: #efe6d6; color: var(--table); }
+    .dl-btn svg { width: 16px; height: 16px; }
+    .dl-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 40;
+      width: 250px;
+      padding: 6px;
+      background: #fffaf2;
+      color: #2b2420;
+      border-radius: 12px;
+      box-shadow: 0 14px 34px -10px rgba(0,0,0,0.55);
+    }
+    .dl-menu[hidden] { display: none; }
+    .reader-bar .dl-menu a { display: block; padding: 10px 12px; border-radius: 8px; opacity: 1; }
+    .reader-bar .dl-menu a:hover, .reader-bar .dl-menu a:focus-visible { background: var(--paper-2); }
+    .dl-menu b { display: block; font-weight: 600; }
+    .dl-menu small { display: block; font-size: 13px; color: #6b5f55; }
+    @media (max-width: 600px) {
+      .dl-btn { padding: 7px; }
+      .dl-btn .label { display: none; }
+      .reader-bar .side-r { gap: 10px; min-width: 0; }
+    }
+
+    /* ---------- Palco e livro ---------- */
+
+    .stage {
+      flex: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 0;
+    }
+
+    .book-frame { position: relative; }
+
+    .book {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: calc(var(--page-w) * 2);
+      height: var(--page-h);
+      transform-origin: 0 0;
+      perspective: 2600px;
+    }
+
+    .single .book { width: var(--page-w); }
+
+    .side {
+      position: absolute;
+      top: 0;
+      width: var(--page-w);
+      height: var(--page-h);
+      cursor: pointer;
+    }
+
+    .side.left { left: 0; }
+    .side.right { left: var(--page-w); }
+    .single .side.left { display: none; }
+    .single .side.right { left: 0; }
+
+    /* Espessura das folhas */
+    .side.left .page:not(.empty) { box-shadow: -1px 0 0 var(--sheet-edge), -3px 1px 0 var(--sheet), -4px 1px 0 var(--sheet-edge), -6px 2px 0 var(--sheet), -7px 2px 0 #d8cbb3, 0 30px 50px -20px rgba(0,0,0,0.6); }
+    .side.right .page:not(.empty) { box-shadow: 1px 0 0 var(--sheet-edge), 3px 1px 0 var(--sheet), 4px 1px 0 var(--sheet-edge), 6px 2px 0 var(--sheet), 7px 2px 0 #d8cbb3, 0 30px 50px -20px rgba(0,0,0,0.6); }
+
+    /* Folha que vira */
+    .leaf {
+      position: absolute;
+      top: 0;
+      width: var(--page-w);
+      height: var(--page-h);
+      transform-style: preserve-3d;
+      z-index: 5;
+      display: none;
+      pointer-events: none;
+    }
+    .leaf.next { left: var(--page-w); transform-origin: left center; }
+    .leaf.prev { left: 0; transform-origin: right center; }
+    .leaf > div { position: absolute; inset: 0; backface-visibility: hidden; }
+    .leaf .back { transform: rotateY(180deg); }
+    .leaf .shade { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.35s ease; }
+    .leaf.next .front .shade { background: linear-gradient(to left, rgba(0,0,0,0.25), transparent 60%); }
+    .leaf.prev .front .shade { background: linear-gradient(to right, rgba(0,0,0,0.25), transparent 60%); }
+    .leaf.turning .front .shade { opacity: 1; }
+
+    /* ---------- Página ---------- */
+
+    .page {
+      position: relative;
+      width: var(--page-w);
+      height: var(--page-h);
+      background: var(--sheet);
+      color: #2b2420;
+      overflow: hidden;
+    }
+
+    .page.empty { background: transparent; }
+
+    /* Sombra da lombada */
+    .page::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 56px;
+      pointer-events: none;
+    }
+    .left .page::after, .leaf.prev .front .page::after, .leaf.next .back .page::after { right: 0; background: linear-gradient(to left, rgba(60,40,20,0.16), transparent); }
+    .right .page::after, .leaf.next .front .page::after, .leaf.prev .back .page::after { left: 0; background: linear-gradient(to right, rgba(60,40,20,0.16), transparent); }
+    .single .page::after { display: none; }
+    .page.empty::after, .page.endpaper::after { display: none; }
+
+    .page-body {
+      position: absolute;
+      inset: 0;
+      padding: var(--pad-t) var(--pad-x) var(--pad-b);
+      font-family: "Literata", Georgia, serif;
+      font-size: 17.5px;
+      line-height: 1.62;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      text-align: justify;
+      overflow: hidden;
+    }
+
+    .page-body p { margin: 0; text-indent: 1.4em; }
+    .page-body p.first { text-indent: 0; }
+    .page-body p.cont { text-indent: 0; }
+    .page-body p.split { text-align-last: justify; }
+
+    .page-body p.first::first-letter {
+      font-family: var(--font-display);
+      float: left;
+      font-size: 4.1em;
+      line-height: 0.82;
+      padding: 0.06em 0.1em 0 0;
+      color: var(--apple);
+    }
+
+    .page-body figure {
+      margin: calc(-1 * var(--pad-t)) calc(-1 * var(--pad-x)) 26px;
+    }
+    .page-body figure img { width: 100%; height: auto; display: block; }
+
+    /* Imagens pequenas: dentro das margens, sem esticar */
+    .page-body figure.small { margin: 14px auto 18px; }
+    .page-body figure.small img { border-radius: 3px; }
+
+    /* Legendas e linhas centradas */
+    .page-body p.center { text-indent: 0; text-align: center; font-style: italic; color: #6b5f55; }
+
+    /* Teatro */
+    .page-body p.speech { text-indent: 0; margin-top: 0.35em; }
+    .page-body .speaker {
+      font-variant: small-caps;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--apple);
+      margin-right: 0.35em;
+    }
+
+    /* Notas: número tocável no texto */
+    .page-body sup.fn {
+      font-family: var(--font-body);
+      font-size: 0.62em;
+      font-weight: 600;
+      color: #fff;
+      background: var(--apple);
+      border-radius: 999px;
+      padding: 0.05em 0.42em;
+      margin-left: 0.12em;
+      cursor: pointer;
+      vertical-align: 0.55em;
+      line-height: 1;
+    }
+    .page-body sup.fn:hover { background: var(--apple-dark); }
+
+    /* Página "Palavras novas" */
+    .page-body h2.gloss-title { font-size: 30px; margin: 0 0 18px; text-align: left; }
+    .page-body p.gloss { text-indent: 0; text-align: left; hyphens: manual; margin-bottom: 0.55em; font-size: 0.92em; line-height: 1.45; }
+    .page-body p.gloss b { font-weight: 600; }
+    .page-body p.gloss .num { display: inline-block; min-width: 1.6em; font-family: var(--font-body); font-size: 0.8em; font-weight: 600; color: var(--apple); }
+
+    .note-pop {
+      position: fixed;
+      z-index: 30;
+      max-width: 280px;
+      background: #fffaf2;
+      color: #2b2420;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: "Literata", Georgia, serif;
+      font-size: 15px;
+      line-height: 1.45;
+      box-shadow: 0 12px 30px -8px rgba(0,0,0,0.5);
+    }
+    .note-pop b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--apple); margin-bottom: 2px; }
+    .note-pop[hidden] { display: none; }
+
+    .folio {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: "Literata", Georgia, serif;
+      font-size: 13px;
+      color: #8a7d6e;
+      letter-spacing: 0.05em;
+    }
+
+    /* Guardas (folhas de cor do início e do fim) */
+    .page.endpaper {
+      background-color: var(--leaf);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23e2a63a' stroke-opacity='.28' stroke-width='1.4'%3E%3Cpath d='M14 18c-1.6-1.8-5.2-2.1-7.2.3-2.2 2.6-1.6 7.7.8 11.4 1.4 2.1 3 3.5 4.8 2.9.7-.2 1.1-.5 1.6-.5s.9.3 1.6.5c1.8.6 3.4-.8 4.8-2.9 2.4-3.7 3-8.8.8-11.4-2-2.4-5.6-2.1-7.2-.3Z'/%3E%3Cpath d='M14 18c0-2.1.6-3.7 1.9-4.8'/%3E%3C/g%3E%3Ccircle cx='42' cy='44' r='1.4' fill='%23e2a63a' fill-opacity='.35'/%3E%3C/svg%3E");
+    }
+
+    /* Página de rosto */
+    .title-page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 56px var(--pad-x) 48px;
+    }
+    .title-page img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 3px; margin-bottom: 40px; }
+    .title-page h1 { font-size: 46px; line-height: 1.05; margin-bottom: 18px; }
+    .title-page .age { font-family: "Literata", serif; font-style: italic; color: #6b5f55; font-size: 17px; }
+    .title-page .dedication { font-family: "Literata", serif; font-style: italic; color: #6b5f55; font-size: 16px; margin-top: 10px; }
+    .title-page.no-cover { justify-content: center; }
+    .title-page.no-cover .mark { width: 64px; height: 64px; margin-bottom: 28px; }
+    .title-page.no-cover h1 { font-size: 50px; }
+    .title-page.no-cover .imprint { position: absolute; bottom: 48px; }
+    .title-page .imprint { margin-top: auto; display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 15px; color: #6b5f55; }
+    .title-page .imprint svg { width: 20px; height: 20px; }
+
+    /* Página final */
+    .end-page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 var(--pad-x) 56px;
+      text-align: center;
+    }
+    .end-page figure { margin: 0 calc(-1 * var(--pad-x)); width: calc(100% + 2 * var(--pad-x)); }
+    .end-page figure img { width: 100%; display: block; }
+    .end-page .fim { font-family: var(--font-display); font-size: 56px; margin: auto 0 8px; }
+    .end-page .orn { color: var(--apple); letter-spacing: 0.5em; margin-bottom: auto; }
+    .end-page .next-steps { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; font-family: var(--font-body); }
+    .end-page .next-steps a {
+      display: block;
+      padding: 11px 16px;
+      border: 1.5px solid #2b2420;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      color: #2b2420;
+    }
+    .end-page .next-steps a.primary { background: var(--apple); border-color: var(--apple); color: #fff; }
+    .end-page .next-steps a:hover { transform: translateY(-1px); }
+    .end-page .dl-line { margin: 16px 0 0; font-family: var(--font-body); font-size: 14px; color: #6b5f55; }
+    .end-page .dl-line a { color: #2b2420; font-weight: 600; }
+
+    /* ---------- Controlos ---------- */
+
+    .reader-controls {
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 12px 20px 20px;
+    }
+
+    .turn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(239,230,214,0.5);
+      background: transparent;
+      color: #efe6d6;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .turn:hover:not(:disabled) { background: #efe6d6; color: var(--table); }
+    .turn:disabled { opacity: 0.25; cursor: default; }
+
+    .progress { width: min(320px, 50vw); height: 3px; background: rgba(239,230,214,0.2); border-radius: 2px; overflow: hidden; }
+    .progress span { display: block; height: 100%; background: var(--mustard); width: 0; transition: width 0.4s ease; }
+
+    /* Telemóvel: página mais estreita para o texto não ficar minúsculo */
+    .compact { --pad-t: 48px; --pad-x: 30px; --pad-b: 58px; }
+    .compact .page-body { font-size: 17px; line-height: 1.58; }
+    .compact .title-page h1 { font-size: 38px; }
+    .compact .folio { bottom: 22px; }
+
+    .measure { position: absolute; left: -9999px; top: 0; visibility: hidden; }
+
+    .loading { font-family: var(--font-display); font-size: 20px; opacity: 0.7; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .leaf { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="reader-bar">
+    <a href="ler.html">← Histórias</a>
+    <span class="title" id="bar-title"></span>
+    <div class="side-r">
+      <span class="count" id="count"></span>
+      <div class="dl">
+        <button class="dl-btn" id="dl-btn" aria-haspopup="true" aria-expanded="false" aria-controls="dl-menu" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+          <span class="label">Descarregar</span>
+        </button>
+        <div class="dl-menu" id="dl-menu" hidden></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+    <p class="loading" id="loading">A abrir o livro…</p>
+    <div class="book-frame" id="frame" hidden>
+      <div class="book" id="book">
+        <div class="side left" id="left"></div>
+        <div class="side right" id="right"></div>
+        <div class="leaf" id="leaf"><div class="front"></div><div class="back"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="reader-controls" aria-label="Virar página">
+    <button class="turn" id="prev" aria-label="Página anterior">←</button>
+    <div class="progress"><span id="progress"></span></div>
+    <button class="turn" id="next" aria-label="Página seguinte">→</button>
+  </nav>
+
+  <div class="measure" id="measure"></div>
+  <div class="note-pop" id="note-pop" role="dialog" aria-live="polite" hidden></div>
+
+  <script src="assets/data.js"></script>
+  <script>
+    // Tamanho da página (em px antes de escalar). No telemóvel usa-se uma página mais estreita.
+    let PAGE_W = 520;
+    let PAGE_H = 740;
+    const TURN_MS = 650;
+    const APPLE = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9c-2-2.2-6.5-2.6-9 .4C4.3 12.6 5 19 8 23.6c1.7 2.6 3.8 4.4 6 3.6.9-.3 1.4-.6 2-.6s1.1.3 2 .6c2.2.8 4.3-1 6-3.6 3-4.6 3.7-11 1-14.2C22.5 6.4 18 6.8 16 9Z" fill="#cf4428"/><path d="M16 9c0-2.6.8-4.6 2.4-6" stroke="#2b2420" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M17.4 6.2c1.8-1.9 4.6-2.2 6.6-1.4-1 2-3.6 3.4-6.6 1.4Z" fill="#2f5a45"/></svg>`;
+
+    const slug = new URLSearchParams(location.search).get("h") || "a-velha-mansao";
+    const escape = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    function loadBook() {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = `assets/books/${encodeURIComponent(slug)}.js`;
+        s.onload = () => resolve(window.BOOK);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    // ---------- Paginação ----------
+
+    function paginate(book, meta) {
+      const measure = document.getElementById("measure");
+      measure.innerHTML = `<div class="page"><div class="page-body"></div></div>`;
+      const body = measure.querySelector(".page-body");
+      const fits = () => body.scrollHeight <= body.clientHeight + 1;
+      const figure = (b) => `<figure><img src="${b.src}" alt="" style="aspect-ratio:${b.ratio}"></figure>`;
+
+      const pages = [];
+      const pending = [];
+      let first = true;
+
+      const flush = (last = false) => {
+        if (body.innerHTML) pages.push({ kind: "text", html: body.innerHTML });
+        body.innerHTML = "";
+        if (pending.length && !last) body.insertAdjacentHTML("beforeend", figure(pending.shift()));
+      };
+
+      // Parte um parágrafo em palavras sem cortar tags (<em>, <sup …>).
+      const splitWords = (html) => html.split(/ (?![^<]*>)/);
+
+      function addParagraph(html, cls) {
+        while (html) {
+          const p = document.createElement("p");
+          if (cls) p.className = cls;
+          p.innerHTML = html;
+          body.appendChild(p);
+          if (fits()) return;
+
+          // Não cabe: encontra quantas palavras cabem nesta página.
+          const words = splitWords(html);
+          let lo = 0, hi = words.length;
+          while (lo < hi) {
+            const mid = Math.ceil((lo + hi) / 2);
+            p.innerHTML = words.slice(0, mid).join(" ");
+            if (fits()) lo = mid; else hi = mid - 1;
+          }
+
+          if (lo === 0) {
+            p.remove();
+          } else {
+            p.innerHTML = words.slice(0, lo).join(" ");
+            p.classList.add("split");
+            html = words.slice(lo).join(" ");
+            cls = cls.includes("speech") ? "speech cont" : cls.includes("gloss") ? "gloss cont" : "cont";
+          }
+          flush();
+        }
+      }
+
+      function addSmallFigure(block) {
+        const w = Math.min(PAGE_W * 0.7, 300 * block.ratio);
+        const html = `<figure class="small" style="width:${Math.round(w)}px"><img src="${block.src}" alt="" style="aspect-ratio:${block.ratio}"></figure>`;
+        body.insertAdjacentHTML("beforeend", html);
+        if (fits()) return;
+        body.lastElementChild.remove();
+        flush();
+        body.insertAdjacentHTML("beforeend", html);
+      }
+
+      for (const block of book.blocks) {
+        if (block.type === "img") {
+          if (block.small) addSmallFigure(block);
+          else if (!body.innerHTML) body.insertAdjacentHTML("beforeend", figure(block));
+          else pending.push(block);
+          continue;
+        }
+
+        let html = block.html ?? escape(block.text || "");
+        let cls = "";
+        if (block.speaker) {
+          cls = "speech";
+          html = `<span class="speaker">${escape(block.speaker)}</span> ${html}`;
+        } else if (block.center) {
+          cls = "center";
+        } else if (first && !/^[—–-]/.test(html)) {
+          cls = "first";
+        }
+        first = false;
+        addParagraph(html, cls);
+      }
+
+      // Palavras novas (notas de rodapé do PDF), numa página própria.
+      if (book.notes && book.notes.length) {
+        flush(true);
+        while (pending.length) {
+          body.insertAdjacentHTML("beforeend", figure(pending.shift()));
+          pages.push({ kind: "text", html: body.innerHTML });
+          body.innerHTML = "";
+        }
+        body.insertAdjacentHTML("beforeend", `<h2 class="gloss-title">Palavras novas</h2>`);
+        for (const n of book.notes) {
+          addParagraph(`<span class="num">${n.n}</span> <b>${escape(n.word)}</b> — ${escape(n.text)}`, "gloss");
+        }
+      }
+      flush(true);
+
+      // Ilustrações que sobraram: cada uma na sua página, a última vai para a página final.
+      while (pending.length > 1) {
+        body.insertAdjacentHTML("beforeend", figure(pending.shift()));
+        pages.push({ kind: "text", html: body.innerHTML });
+        body.innerHTML = "";
+      }
+      const finalImage = pending.shift();
+
+      // Números de página
+      pages.forEach((p, i) => (p.folio = i + 1));
+
+      const age = meta ? (meta.age[0] === meta.age[1]
+        ? `Para leitores a partir dos ${meta.age[0]} anos`
+        : `Para leitores dos ${meta.age[0]} aos ${meta.age[1]} anos`) : "";
+      const cover = meta && meta.cover ? IMG(meta.cover, 800, 600) : null;
+      const dedication = book.dedication ? `<p class="dedication">${escape(book.dedication)}</p>` : "";
+
+      const links = [];
+      if (meta && meta.quiz) links.push(`<a class="primary" href="${quizHref(meta)}"${quizTarget(meta)}>Consegues acertar?</a>`);
+      if (meta && meta.pictures) links.push(`<a href="${meta.pictures}" target="_blank" rel="noopener">A história em imagens</a>`);
+      links.push(`<a${links.length ? "" : ' class="primary"'} href="ler.html">Escolher outra história</a>`);
+
+      const all = [
+        { kind: "endpaper" },
+        { kind: "title", html: `
+          <div class="title-page${cover ? "" : " no-cover"}">
+            ${cover ? `<img src="${cover}" alt="">` : `<span class="mark">${APPLE}</span>`}
+            <h1>${escape(book.title)}</h1>
+            <p class="age">${age}</p>
+            ${dedication}
+            <p class="imprint">${cover ? APPLE : ""} Conta-me Uma História</p>
+          </div>` },
+        ...pages,
+        { kind: "end", html: `
+          <div class="end-page">
+            ${finalImage ? `<figure><img src="${finalImage.src}" alt="" style="aspect-ratio:${finalImage.ratio}"></figure>` : ""}
+            <p class="fim">Fim</p>
+            <p class="orn" aria-hidden="true">✦ ✦ ✦</p>
+            <div class="next-steps">${links.join("")}</div>
+            <p class="dl-line">Descarregar o livro: ${downloads().map((d) => `<a href="${d.href}" download="${escape(d.file)}">${d.label}</a>`).join(" · ")}</p>
+          </div>` },
+      ];
+      // Guarda final: fica ao lado da página "Fim" quando esta cai à esquerda.
+      all.push({ kind: "endpaper" });
+      if (all.length % 2) all.push({ kind: "empty" });
+      measure.innerHTML = "";
+      return all;
+    }
+
+    function pageEl(page) {
+      const el = document.createElement("div");
+      el.className = "page";
+      if (!page) { el.classList.add("empty"); return el; }
+      if (page.kind === "empty") el.classList.add("empty");
+      if (page.kind === "endpaper") el.classList.add("endpaper");
+      if (page.kind === "text") {
+        el.innerHTML = `<div class="page-body">${page.html}</div><div class="folio">${page.folio}</div>`;
+      } else if (page.html) {
+        el.innerHTML = page.html;
+      }
+      return el;
+    }
+
+    // ---------- Leitor ----------
+
+    let pages = [];
+    let single = false;
+    let pos = 1;          // índice da página (no modo de duas páginas, a da direita do par)
+    let busy = false;
+
+    const $ = (id) => document.getElementById(id);
+    const left = $("left"), right = $("right"), leaf = $("leaf");
+
+    // No modo de duas páginas, a página da direita tem sempre índice ímpar.
+    const spreadOf = (i) => (i % 2 ? i : i + 1);
+
+    function firstPos() { return 1; }
+    function lastPos() {
+      const lastReal = pages.findLastIndex((p) => p.kind !== "empty" && p.kind !== "endpaper");
+      return single ? lastReal : spreadOf(lastReal);
+    }
+
+    function show() {
+      left.replaceChildren(pageEl(single ? null : pages[pos - 1]));
+      right.replaceChildren(pageEl(pages[pos]));
+      updateUi();
+    }
+
+    function updateUi() {
+      $("prev").disabled = pos <= firstPos();
+      $("next").disabled = pos >= lastPos();
+      const textPages = pages.filter((p) => p.kind === "text").length;
+      const visible = (single ? [pages[pos]] : [pages[pos - 1], pages[pos]]).filter((p) => p && p.folio);
+      $("count").textContent = visible.length ? `${visible.map((p) => p.folio).join("–")} de ${textPages}` : "";
+      $("progress").style.width = `${((pos - 1) / Math.max(1, lastPos() - 1)) * 100}%`;
+    }
+
+    function turn(dir) {
+      if (busy) return;
+      const target = single ? pos + dir : pos + dir * 2;
+      if (target < firstPos() || target > lastPos()) return;
+
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (single || reduce) {
+        hideNote();
+        pos = target;
+        show();
+        return;
+      }
+
+      busy = true;
+      hideNote();
+      const front = leaf.querySelector(".front");
+      const back = leaf.querySelector(".back");
+      leaf.className = `leaf ${dir > 0 ? "next" : "prev"}`;
+      leaf.style.transition = "none";
+      leaf.style.transform = "rotateY(0deg)";
+
+      if (dir > 0) {
+        front.replaceChildren(pageEl(pages[pos]), Object.assign(document.createElement("div"), { className: "shade" }));
+        back.replaceChildren(pageEl(pages[target - 1]));
+        right.replaceChildren(pageEl(pages[target]));
+      } else {
+        front.replaceChildren(pageEl(pages[pos - 1]), Object.assign(document.createElement("div"), { className: "shade" }));
+        back.replaceChildren(pageEl(pages[target]));
+        left.replaceChildren(pageEl(pages[target - 1]));
+      }
+      leaf.style.display = "block";
+
+      leaf.offsetWidth; // força o layout para a transição arrancar do ângulo 0
+      leaf.classList.add("turning");
+      leaf.style.transition = `transform ${TURN_MS}ms cubic-bezier(.45,.05,.3,1)`;
+      leaf.style.transform = `rotateY(${dir > 0 ? -180 : 180}deg)`;
+
+      setTimeout(() => {
+        pos = target;
+        show();
+        leaf.style.display = "none";
+        busy = false;
+      }, TURN_MS + 30);
+    }
+
+    let book = null;
+    let meta = null;
+
+    function layout() {
+      const stage = $("stage");
+      const w = stage.clientWidth - 32;
+      const h = stage.clientHeight - 16;
+      const wasSingle = single;
+      single = w < 760 || w / h < 1.05;
+      document.body.classList.toggle("single", single);
+
+      const compact = single && w < 560;
+      const pw = compact ? 380 : 520;
+      const ph = compact ? Math.round(Math.min(820, Math.max(560, pw * h / w))) : 740;
+      if (pw !== PAGE_W || ph !== PAGE_H || !pages.length) {
+        // Novo tamanho de página: volta a paginar e tenta manter o sítio onde se ia.
+        const frac = pages.length ? pos / pages.length : 0;
+        PAGE_W = pw;
+        PAGE_H = ph;
+        document.body.classList.toggle("compact", compact);
+        document.documentElement.style.setProperty("--page-w", `${pw}px`);
+        document.documentElement.style.setProperty("--page-h", `${ph}px`);
+        pages = paginate(book, meta);
+        pos = Math.max(1, Math.min(Math.round(frac * pages.length), lastPos()));
+        if (!single) pos = spreadOf(pos);
+        show();
+      }
+
+      const bookW = single ? PAGE_W : PAGE_W * 2;
+      const scale = Math.min(w / bookW, h / PAGE_H, 1.25);
+      $("book").style.transform = `scale(${scale})`;
+      $("frame").style.width = `${bookW * scale}px`;
+      $("frame").style.height = `${PAGE_H * scale}px`;
+
+      if (wasSingle !== single && pages.length) {
+        if (!single) pos = spreadOf(pos);
+        show();
+      }
+    }
+
+    // Navegação: botões, teclado, clique nas páginas e deslizar.
+    $("prev").addEventListener("click", () => turn(-1));
+    $("next").addEventListener("click", () => turn(1));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); turn(1); }
+      if (e.key === "ArrowLeft") turn(-1);
+    });
+    // Notas: tocar no número mostra a explicação, sem virar a página.
+    const pop = $("note-pop");
+    function showNote(sup) {
+      const note = (book.notes || []).find((n) => String(n.n) === sup.dataset.n);
+      if (!note) return;
+      pop.innerHTML = `<b>${escape(note.word)}</b>${escape(note.text)}`;
+      pop.hidden = false;
+      const r = sup.getBoundingClientRect();
+      const w = pop.offsetWidth, h = pop.offsetHeight;
+      const x = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2));
+      const y = r.top - h - 10 > 8 ? r.top - h - 10 : r.bottom + 10;
+      pop.style.left = `${x}px`;
+      pop.style.top = `${y}px`;
+    }
+    const hideNote = () => (pop.hidden = true);
+    document.addEventListener("click", (e) => {
+      const sup = e.target.closest("sup.fn");
+      if (sup) { e.stopPropagation(); showNote(sup); }
+      else if (!e.target.closest("#note-pop")) hideNote();
+    }, true);
+    addEventListener("resize", hideNote);
+
+    const ignoreClick = (e) => e.target.closest("a, sup.fn");
+    left.addEventListener("click", (e) => { if (!ignoreClick(e)) turn(-1); });
+    right.addEventListener("click", (e) => {
+      if (ignoreClick(e)) return;
+      if (single) {
+        const r = right.getBoundingClientRect();
+        turn(e.clientX - r.left < r.width / 3 ? -1 : 1);
+      } else turn(1);
+    });
+
+    let touchX = null;
+    $("stage").addEventListener("touchstart", (e) => (touchX = e.touches[0].clientX), { passive: true });
+    $("stage").addEventListener("touchend", (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) turn(dx < 0 ? 1 : -1);
+      touchX = null;
+    });
+
+    // Descarregar: ficheiros gerados por tools/export_books.py em assets/downloads/.
+    function downloads() {
+      return [
+        { ext: "epub", label: "EPUB", hint: "Para Apple Books, Kobo, Kindle…" },
+        { ext: "pdf", label: "PDF", hint: "Para imprimir ou ler no computador" },
+      ].map((d) => ({ ...d, href: `assets/downloads/${book.slug}.${d.ext}`, file: `${book.title}.${d.ext}` }));
+    }
+
+    const dlBtn = $("dl-btn"), dlMenu = $("dl-menu");
+    function setMenu(open) {
+      dlMenu.hidden = !open;
+      dlBtn.setAttribute("aria-expanded", open);
+    }
+    dlBtn.addEventListener("click", () => setMenu(dlMenu.hidden));
+    dlMenu.addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
+    document.addEventListener("click", (e) => { if (!e.target.closest(".dl")) setMenu(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !dlMenu.hidden) { setMenu(false); dlBtn.focus(); } });
+
+    let resizeTimer;
+    addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => book && layout(), 150);
+    });
+
+    (async () => {
+      try {
+        book = await loadBook();
+        meta = [...(window.ILLUSTRATED || []), ...(window.ARCHIVE || [])].find((s) => s.book === book.slug);
+        document.title = `${book.title} · Conta-me Uma História`;
+        $("bar-title").textContent = book.title;
+        dlMenu.innerHTML = downloads().map((d) => `
+          <a href="${d.href}" download="${escape(d.file)}"><b>${d.label}</b><small>${d.hint}</small></a>`).join("");
+        dlBtn.hidden = false;
+
+        await document.fonts.load('17.5px "Literata"');
+        await document.fonts.load('46px "Young Serif"');
+        await document.fonts.ready;
+
+        $("loading").remove();
+        $("frame").hidden = false;
+        layout();
+      } catch (err) {
+        $("loading").textContent = "Não foi possível abrir este livro.";
+      }
+    })();
+  </script>
+</body>
+</html>

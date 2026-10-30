@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ler · Conta-me Uma História</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="ler">
+  <div data-header></div>
+
+  <main class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">O arquivo</p>
+      <h1>Lê uma história!</h1>
+      <p>Há histórias do Conta-me Uma História e outras enviadas pelos nossos amigos. A idade indicada serve apenas como referência.</p>
+    </header>
+
+    <div class="toolbar">
+      <div class="chips" role="group" aria-label="Filtrar por idade">
+        <button class="chip" data-age="all" aria-pressed="true">Todas as idades</button>
+        <button class="chip" data-age="4-6" aria-pressed="false">4 a 6 anos</button>
+        <button class="chip" data-age="7-9" aria-pressed="false">7 a 9 anos</button>
+        <button class="chip" data-age="10-12" aria-pressed="false">10 a 12 anos</button>
+      </div>
+      <input class="search" type="search" placeholder="Procurar história…" aria-label="Procurar história">
+    </div>
+
+    <section style="margin-bottom: 96px;">
+      <div class="section-head">
+        <h2>Ilustradas</h2>
+        <p>Cada uma tem três versões: o texto com ilustrações, um jogo para adivinhar e a história contada só em imagens.</p>
+      </div>
+      <div class="story-grid" id="illustrated"></div>
+      <p class="empty" id="illustrated-empty">Nenhuma história ilustrada corresponde à pesquisa.</p>
+    </section>
+
+    <section style="margin-bottom: 96px;">
+      <div class="section-head">
+        <h2>Do arquivo</h2>
+        <p>Histórias para ler ou descarregar em PDF.</p>
+      </div>
+      <ul class="archive" id="archive"></ul>
+      <p class="empty" id="archive-empty">Nenhuma história do arquivo corresponde à pesquisa.</p>
+      <p class="note" style="margin-top: 32px;">As próximas histórias estão a caminho.</p>
+    </section>
+  </main>
+
+  <div data-footer></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+  <script>
+    const ageLabel = ([a, b]) => a === b ? `${a} anos` : `${a}–${b} anos`;
+    const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+    const illustratedEl = document.getElementById("illustrated");
+    const archiveEl = document.getElementById("archive");
+
+    // Histórias já convertidas em livro abrem no leitor; as restantes abrem o PDF.
+    const readLink = (s) => s.book
+      ? `href="livro.html?h=${s.book}"`
+      : `href="${s.text}" target="_blank" rel="noopener"`;
+
+    // Descarregar: ficheiros gerados por tools/export_books.py em assets/downloads/.
+    const DL_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>`;
+    const downloadMenu = (s) => s.book ? `
+      <div class="dl-wrap">
+        <button class="dl-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Descarregar ${s.title}" title="Descarregar">${DL_ICON}</button>
+        <div class="dl-pop" hidden>
+          <a href="assets/downloads/${s.book}.epub" download="${s.title}.epub"><b>EPUB</b><small>Para Apple Books, Kobo, Kindle…</small></a>
+          <a href="assets/downloads/${s.book}.pdf" download="${s.title}.pdf"><b>PDF</b><small>Para imprimir ou ler no computador</small></a>
+        </div>
+      </div>` : "";
+
+    illustratedEl.innerHTML = ILLUSTRATED.map((s, i) => `
+      <article class="story" data-i="${i}">
+        <figure>
+          <a ${readLink(s)} tabindex="-1">
+            <img src="${IMG(s.cover)}" alt="" loading="lazy">
+          </a>
+          <span class="age">${ageLabel(s.age)}</span>
+        </figure>
+        <h3><a ${readLink(s)}>${s.title}</a></h3>
+        <p>${s.blurb}</p>
+        <div class="story-links">
+          <a ${readLink(s)}>Ler</a>
+          <a href="${quizHref(s)}"${quizTarget(s)}>Consegues acertar?</a>
+          <a href="${s.pictures}" target="_blank" rel="noopener">Em imagens</a>
+        </div>
+        ${downloadMenu(s)}
+      </article>`).join("");
+
+    archiveEl.innerHTML = ARCHIVE.map((s, i) => `
+      <li data-i="${i}">
+        <a class="row" ${s.book ? `href="livro.html?h=${s.book}"` : `href="${s.pdf}" target="_blank" rel="noopener"`}>
+          <span class="t">${s.title}</span>
+          <span class="b">${s.blurb}</span>
+          <span class="a">${ageLabel(s.age)}</span>
+          <span class="go" aria-hidden="true">${s.book ? "→" : "↗"}</span>
+        </a>
+        ${downloadMenu(s)}
+      </li>`).join("");
+
+    // Um menu de cada vez; fecha ao clicar fora, ao escolher um ficheiro ou com Esc.
+    function closeMenus(except) {
+      document.querySelectorAll(".dl-wrap.open").forEach((w) => {
+        if (w === except) return;
+        w.classList.remove("open");
+        w.querySelector(".dl-pop").hidden = true;
+        w.querySelector(".dl-toggle").setAttribute("aria-expanded", "false");
+      });
+    }
+    document.addEventListener("click", (e) => {
+      const toggle = e.target.closest(".dl-toggle");
+      const wrap = e.target.closest(".dl-wrap");
+      closeMenus(toggle ? wrap : null);
+      if (!toggle) return;
+      const open = wrap.classList.toggle("open");
+      wrap.querySelector(".dl-pop").hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+    }, { signal: window.pageSignal });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      const open = document.querySelector(".dl-wrap.open .dl-toggle");
+      closeMenus();
+      open?.focus();
+    }, { signal: window.pageSignal });
+
+    let age = "all";
+    let query = "";
+
+    function matches(s) {
+      if (age !== "all") {
+        const [lo, hi] = age.split("-").map(Number);
+        if (s.age[1] < lo || s.age[0] > hi) return false;
+      }
+      if (query && !norm(s.title + " " + s.blurb).includes(query)) return false;
+      return true;
+    }
+
+    const EASE = "cubic-bezier(.2,.7,.2,1)";
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Cópia de um item que sai, deixada no mesmo sítio enquanto desaparece.
+    function ghost(el, rect) {
+      const parent = el.parentElement.getBoundingClientRect();
+      const g = el.cloneNode(true);
+      g.hidden = false;
+      g.classList.add("ghost");
+      g.removeAttribute("data-i");
+      Object.assign(g.style, {
+        position: "absolute",
+        left: `${rect.left - parent.left}px`,
+        top: `${rect.top - parent.top}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        margin: "0",
+        pointerEvents: "none",
+      });
+      el.parentElement.appendChild(g);
+      g.animate(
+        [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.94)" }],
+        { duration: 200, easing: "ease-out" }
+      ).finished.then(() => g.remove(), () => g.remove());
+    }
+
+    // Filtra e anima: os que ficam deslizam para o novo lugar (FLIP), os novos aparecem, os que saem desvanecem.
+    function apply() {
+      const groups = [
+        { list: illustratedEl, items: [...illustratedEl.querySelectorAll(":scope > .story:not(.ghost)")], data: ILLUSTRATED, empty: "illustrated-empty" },
+        { list: archiveEl, items: [...archiveEl.querySelectorAll(":scope > li:not(.ghost)")], data: ARCHIVE, empty: "archive-empty" },
+      ];
+      const all = groups.flatMap((g) => g.items);
+
+      const before = new Map();
+      all.forEach((el) => { if (!el.hidden) before.set(el, el.getBoundingClientRect()); });
+
+      for (const g of groups) {
+        let shown = 0;
+        g.items.forEach((el) => {
+          const ok = matches(g.data[el.dataset.i]);
+          el.hidden = !ok;
+          shown += ok;
+        });
+        document.getElementById(g.empty).classList.toggle("show", !shown);
+      }
+
+      if (reduceMotion.matches) return;
+
+      let entering = 0;
+      all.forEach((el) => {
+        const was = before.get(el);
+        if (el.hidden) {
+          if (was) ghost(el, was);
+          return;
+        }
+        el.getAnimations().forEach((a) => a.cancel());
+        if (!was) {
+          el.animate(
+            [{ opacity: 0, transform: "translateY(14px) scale(.97)" }, { opacity: 1, transform: "none" }],
+            { duration: 320, easing: EASE, delay: 80 + Math.min(entering++, 8) * 25, fill: "backwards" }
+          );
+          return;
+        }
+        const now = el.getBoundingClientRect();
+        const dx = was.left - now.left;
+        const dy = was.top - now.top;
+        if (dx || dy) {
+          el.animate(
+            [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+            { duration: 380, easing: EASE }
+          );
+        }
+      });
+    }
+
+    document.querySelectorAll(".chip").forEach((chip) => chip.addEventListener("click", () => {
+      age = chip.dataset.age;
+      document.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c === chip));
+      apply();
+    }));
+
+    document.querySelector(".search").addEventListener("input", (e) => {
+      query = norm(e.target.value.trim());
+      apply();
+    });
+  </script>
+</body>
+</html>

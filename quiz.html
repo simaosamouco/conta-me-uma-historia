@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consegues acertar? · Conta-me Uma História</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root {
+      --right: #2e7d4c;
+      --right-bg: #e1f0e4;
+      --wrong: #c23c22;
+      --wrong-bg: #fbe0d8;
+    }
+
+    .quiz { max-width: 720px; margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 96px; }
+
+    .quiz-head { display: flex; gap: 20px; align-items: center; margin-bottom: 40px; }
+    .quiz-head img { width: 84px; height: 84px; object-fit: cover; border-radius: 50%; flex: none; }
+    .quiz-head h1 { font-size: clamp(30px, 5vw, 44px); }
+    .quiz-head .eyebrow { margin-bottom: 6px; }
+
+    /* ---------- Progresso ---------- */
+
+    .progress-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .progress-row .label { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+    .dots { display: flex; gap: 6px; }
+    .dots span { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--line); background: transparent; transition: background 0.2s ease, border-color 0.2s ease; }
+    .dots span.now { border-color: var(--ink); }
+    .dots span.ok { background: var(--right); border-color: var(--right); }
+    .dots span.no { background: var(--wrong); border-color: var(--wrong); }
+
+    /* ---------- Pergunta ---------- */
+
+    .card { border-top: 1px solid var(--ink); padding-top: 32px; }
+    .card h2 { font-size: clamp(24px, 3.6vw, 32px); line-height: 1.2; margin-bottom: 28px; }
+
+    .options { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+
+    .option {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      background: #fffaf2;
+      color: var(--ink);
+      font: inherit;
+      font-size: 17px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+    .option:hover:not(:disabled) { border-color: var(--ink); transform: translateY(-1px); }
+    .option:disabled { cursor: default; }
+
+    .option .letter {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 17px;
+      background: var(--paper-2);
+    }
+
+    .option .mark { font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+    .option.right { background: var(--right-bg); border-color: var(--right); }
+    .option.right .letter { background: var(--right); color: #fff; }
+    .option.right .mark { color: var(--right); }
+
+    .option.wrong { background: var(--wrong-bg); border-color: var(--wrong); }
+    .option.wrong .letter { background: var(--wrong); color: #fff; }
+    .option.wrong .mark { color: var(--wrong); }
+
+    .option.faded { opacity: 0.45; }
+
+    .option.pop { animation: pop 0.3s ease; }
+    .option.shake { animation: shake 0.35s ease; }
+    @keyframes pop { 50% { transform: scale(1.025); } }
+    @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+    @media (prefers-reduced-motion: reduce) { .option.pop, .option.shake { animation: none; } }
+
+    .feedback { min-height: 64px; margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .feedback p { margin: 0; font-family: var(--font-display); font-size: 22px; }
+    .feedback p.ok { color: var(--right); }
+    .feedback p.no { color: var(--wrong); }
+    .feedback .btn[hidden] { display: none; }
+    /* Botão neutro: o verde e o vermelho ficam reservados para certo/errado */
+    .btn-dark { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .btn-dark:hover { background: #000; }
+
+    /* ---------- Resultado ---------- */
+
+    .result { text-align: center; border-top: 1px solid var(--ink); padding-top: 48px; }
+    .result .score { font-family: var(--font-display); font-size: clamp(72px, 14vw, 120px); line-height: 1; margin-bottom: 8px; }
+    .result .score small { font-size: 0.4em; color: var(--ink-soft); }
+    .result h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 12px; }
+    .result p { color: var(--ink-soft); font-size: 18px; max-width: 30em; margin: 0 auto 28px; }
+    .result .dots { justify-content: center; margin-bottom: 36px; }
+    .result .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+    .hint { font-size: 13px; color: var(--ink-soft); margin-top: 28px; }
+    @media (hover: none) { .hint { display: none; } }
+  </style>
+</head>
+<body data-page="quiz">
+  <div data-header></div>
+
+  <main class="wrap">
+    <div class="quiz" id="quiz">
+      <p class="note">A carregar as perguntas…</p>
+    </div>
+  </main>
+
+  <div data-footer></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/site.js"></script>
+  <script>
+    const slug = new URLSearchParams(location.search).get("h") || "a-velha-mansao";
+    const root = document.getElementById("quiz");
+    const escape = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const LETTERS = "ABCDEFGH";
+
+    const PRAISE = [
+      [10, "Perfeito!", "Acertaste em tudo. Estiveste mesmo com atenção à história."],
+      [8, "Muito bem!", "Quase tudo certo. És um leitor atento."],
+      [5, "Bom trabalho!", "Já sabes bastante sobre a história. Queres tentar outra vez?"],
+      [0, "Continua a tentar!", "Se calhar vale a pena voltar a ler a história e tentar de novo."],
+    ];
+
+    let quiz, meta;
+    let current = 0;
+    let results = [];
+
+    function loadQuiz() {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = `assets/books/${encodeURIComponent(slug)}.quiz.js`;
+        s.onload = () => resolve(window.QUIZ);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    // MARK: Cabeçalho e progresso
+
+    function header() {
+      const title = meta ? meta.title : "";
+      const cover = meta ? `<img src="${IMG(meta.cover, 200, 200)}" alt="">` : "";
+      return `
+        <div class="quiz-head">
+          ${cover}
+          <div>
+            <p class="eyebrow">Consegues acertar?</p>
+            <h1>${escape(title)}</h1>
+          </div>
+        </div>`;
+    }
+
+    function dots() {
+      return `<div class="dots" aria-hidden="true">${quiz.questions.map((_, i) => {
+        const r = results[i];
+        const cls = r === true ? "ok" : r === false ? "no" : i === current ? "now" : "";
+        return `<span class="${cls}"></span>`;
+      }).join("")}</div>`;
+    }
+
+    // MARK: Pergunta
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      const last = current === quiz.questions.length - 1;
+      root.innerHTML = `
+        ${header()}
+        <div class="progress-row">
+          <span class="label">Pergunta ${current + 1} de ${quiz.questions.length}</span>
+          ${dots()}
+        </div>
+        <section class="card">
+          <h2 id="q">${escape(q.question)}</h2>
+          <ul class="options" role="list" aria-labelledby="q">
+            ${q.options.map((o, i) => `
+              <li><button class="option" data-i="${i}">
+                <span class="letter">${LETTERS[i]}</span>
+                <span>${escape(o)}</span>
+                <span class="mark"></span>
+              </button></li>`).join("")}
+          </ul>
+          <div class="feedback" aria-live="polite">
+            <p id="verdict"></p>
+            <button class="btn btn-dark" id="next" hidden>${last ? "Ver resultado" : "Próxima pergunta"} →</button>
+          </div>
+          <p class="hint">Dica: podes responder com as teclas A, B, C, D.</p>
+        </section>`;
+
+      root.querySelectorAll(".option").forEach((b) => b.addEventListener("click", () => answer(Number(b.dataset.i))));
+      root.querySelector("#next").addEventListener("click", advance);
+    }
+
+    function answer(i) {
+      if (results[current] !== undefined) return;
+      const q = quiz.questions[current];
+      const ok = i === q.answer;
+      results[current] = ok;
+
+      const buttons = root.querySelectorAll(".option");
+      buttons.forEach((b, j) => {
+        b.disabled = true;
+        if (j === i) {
+          b.classList.add(ok ? "right" : "wrong", ok ? "pop" : "shake");
+          b.querySelector(".mark").textContent = ok ? "✓ Certo" : "✗ Errado";
+        } else if (j === q.answer) {
+          b.classList.add("right");
+          b.querySelector(".mark").textContent = "Era esta";
+        } else {
+          b.classList.add("faded");
+        }
+      });
+
+      const verdict = root.querySelector("#verdict");
+      verdict.className = ok ? "ok" : "no";
+      verdict.textContent = ok ? "Muito bem, acertaste!" : "Oh, não era essa…";
+
+      root.querySelector(".progress-row .dots").outerHTML = dots();
+      const next = root.querySelector("#next");
+      next.hidden = false;
+      next.focus({ preventScroll: true });
+    }
+
+    function advance() {
+      current += 1;
+      if (current < quiz.questions.length) renderQuestion();
+      else renderResult();
+      root.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // MARK: Resultado
+
+    function renderResult() {
+      const total = quiz.questions.length;
+      const score = results.filter(Boolean).length;
+      const pct = (score / total) * 10;
+      const [, title, text] = PRAISE.find(([min]) => pct >= min);
+      const back = meta && meta.book ? `<a class="btn btn-ghost" href="livro.html?h=${meta.book}">Voltar ao livro</a>` : "";
+
+      root.innerHTML = `
+        ${header()}
+        <section class="result">
+          <p class="score">${score}<small> / ${total}</small></p>
+          <h2>${title}</h2>
+          <p>${text}</p>
+          ${dots()}
+          <div class="actions">
+            <button class="btn btn-primary" id="again">Tentar outra vez</button>
+            ${back}
+            <a class="btn btn-ghost" href="ler.html">Escolher outra história</a>
+          </div>
+        </section>`;
+
+      root.querySelector("#again").addEventListener("click", () => {
+        current = 0;
+        results = [];
+        renderQuestion();
+      });
+    }
+
+    // Teclado: A–D (ou 1–4) para responder, Enter para avançar.
+    document.addEventListener("keydown", (e) => {
+      if (!quiz || current >= quiz.questions.length || e.target.closest?.("input, textarea")) return;
+      const key = e.key.toUpperCase();
+      const n = quiz.questions[current].options.length;
+      let i = LETTERS.indexOf(key);
+      if (i < 0 && /^[1-8]$/.test(key)) i = Number(key) - 1;
+      if (i >= 0 && i < n) answer(i);
+    }, { signal: window.pageSignal });
+
+    (async () => {
+      try {
+        quiz = await loadQuiz();
+        meta = (window.ILLUSTRATED || []).find((s) => s.book === quiz.slug);
+        if (meta) document.title = `Consegues acertar? ${meta.title} · Conta-me Uma História`;
+        renderQuestion();
+      } catch (err) {
+        root.innerHTML = `<p class="note">Não foi possível carregar as perguntas desta história.</p>`;
+      }
+    })();
+  </script>
+</body>
+</html>
