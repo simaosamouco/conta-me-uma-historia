@@ -39,7 +39,7 @@
         <button class="play" aria-label="Ouvir ${a.title}">${ICONS.play}</button>
         <span class="t">${a.title}${a.note ? `<small>${a.note}</small>` : ""}</span>
         <span class="d">${a.duration}</span>
-        <div class="bar" aria-hidden="true"><span></span></div>
+        <div class="bar" role="slider" tabindex="0" aria-label="Posição em ${a.title}" aria-valuemin="0" aria-valuemax="100"><span></span></div>
       </li>`).join("");
 
     const trackOf = (li) => {
@@ -51,18 +51,28 @@
       const li = e.target.closest(".track");
       if (!li) return;
       const isCurrent = Player.current?.src === AUDIO[li.dataset.i].src;
-
-      const bar = e.target.closest(".bar");
-      if (bar && isCurrent) {
-        const r = bar.getBoundingClientRect();
-        Player.seek((e.clientX - r.left) / r.width);
-        return;
-      }
       if (!e.target.closest(".play")) return;
       isCurrent ? Player.toggle() : Player.play(trackOf(li));
     });
 
-    Player.subscribe((s) => {
+    // A barra só aparece na história que está a tocar, por isso arrastar mexe sempre no leitor atual.
+    list.querySelectorAll(".track").forEach((li) => {
+      const a = AUDIO[li.dataset.i];
+      const bar = li.querySelector(".bar");
+      makeScrubber(bar, {
+        onDrag(f) {
+          if (f === null) return draw(last);
+          setProgress(bar, f, Player.duration);
+          li.querySelector(".d").textContent = `${formatTime(f * Player.duration)} / ${a.duration}`;
+        },
+        onSeek: (f) => Player.seek(f),
+        onStep: (dir) => Player.skip(dir * 5),
+      });
+    });
+
+    let last;
+    function draw(s) {
+      last = s;
       list.querySelectorAll(".track").forEach((li) => {
         const a = AUDIO[li.dataset.i];
         const mine = s.track && s.track.src === a.src;
@@ -75,10 +85,13 @@
           btn.innerHTML = on === "true" ? ICONS.pause : ICONS.play;
           btn.setAttribute("aria-label", `${on === "true" ? "Pausa" : "Ouvir"} ${a.title}`);
         }
+        const bar = li.querySelector(".bar");
+        if (bar.classList.contains("dragging")) return;
         li.querySelector(".d").textContent = mine && s.time ? `${formatTime(s.time)} / ${a.duration}` : a.duration;
-        li.querySelector(".bar span").style.width = mine && s.duration ? `${(s.time / s.duration) * 100}%` : "0";
+        setProgress(bar, mine && s.duration ? s.time / s.duration : 0, s.duration);
       });
-    }, window.pageSignal);
+    }
+    Player.subscribe(draw, window.pageSignal);
   </script>
 </body>
 </html>

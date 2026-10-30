@@ -30,6 +30,55 @@ window.pageSignal = pageController.signal;
 
 const formatTime = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
+// MARK: Barra de progresso arrastável
+
+// Pinta a barra (a largura e a bola seguem a variável --p) e atualiza o que o leitor de ecrã anuncia.
+function setProgress(el, fraction, duration) {
+  const f = Math.min(1, Math.max(0, fraction || 0));
+  el.style.setProperty("--p", f);
+  el.setAttribute("aria-valuenow", Math.round(f * 100));
+  if (duration) el.setAttribute("aria-valuetext", `${formatTime(f * duration)} de ${formatTime(duration)}`);
+}
+
+// Arrastar a bola com o rato ou o dedo (ou tocar na barra) e setas do teclado.
+// onDrag(fração) durante o arrasto (null = cancelado), onSeek(fração) ao largar, onStep(±1) nas setas.
+function makeScrubber(el, { onDrag, onSeek, onStep }) {
+  let dragging = false;
+  const fractionAt = (x) => {
+    const r = el.getBoundingClientRect();
+    return Math.min(1, Math.max(0, (x - r.left) / r.width));
+  };
+  const stop = () => {
+    dragging = false;
+    el.classList.remove("dragging");
+  };
+
+  el.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    dragging = true;
+    try { el.setPointerCapture(e.pointerId); } catch {}  // continua a seguir o dedo/rato fora da barra
+    el.classList.add("dragging");
+    onDrag(fractionAt(e.clientX));
+  });
+  el.addEventListener("pointermove", (e) => { if (dragging) onDrag(fractionAt(e.clientX)); });
+  el.addEventListener("pointerup", (e) => {
+    if (!dragging) return;
+    stop();
+    onSeek(fractionAt(e.clientX));
+  });
+  el.addEventListener("pointercancel", () => {
+    if (!dragging) return;
+    stop();
+    onDrag(null);
+  });
+  el.addEventListener("keydown", (e) => {
+    const dir = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+    if (dir) { e.preventDefault(); onStep(dir); }
+    if (e.key === "Home") { e.preventDefault(); onSeek(0); }
+  });
+}
+
 // MARK: Cabeçalho
 
 function renderHeader() {
@@ -121,6 +170,7 @@ const Player = (() => {
 
   const api = {
     get current() { return track; },
+    get duration() { return audio.duration || 0; },
     play(t) {
       if (!track || track.src !== t.src) load(t);
       audio.play();
@@ -168,9 +218,16 @@ const Player = (() => {
       main.setAttribute("aria-label", s.playing ? "Pausa" : "Continuar");
     }
     bar.querySelector(".p-label").textContent = s.playing ? "A ouvir" : "Em pausa";
-    const total = s.duration ? formatTime(s.duration) : s.track.duration || "";
-    bar.querySelector(".p-time").textContent = `${formatTime(s.time)} / ${total}`;
-    bar.querySelector(".p-progress span").style.width = s.duration ? `${(s.time / s.duration) * 100}%` : "0";
+    // Enquanto se arrasta a bola, a barra e o tempo mostram o ponto escolhido, não o que está a tocar.
+    const progress = bar.querySelector(".p-progress");
+    if (progress.classList.contains("dragging")) return;
+    showTime(s.time);
+    setProgress(progress, s.duration ? s.time / s.duration : 0, s.duration);
+  }
+
+  function showTime(time) {
+    const total = audio.duration ? formatTime(audio.duration) : track?.duration || "";
+    bar.querySelector(".p-time").textContent = `${formatTime(time)} / ${total}`;
   }
 
   function mount() {
@@ -189,7 +246,7 @@ const Player = (() => {
           <span class="p-time"></span>
           <button class="p-btn p-close" data-act="close" aria-label="Fechar leitor">${ICONS.close}</button>
         </div>
-        <div class="p-progress" aria-hidden="true"><span></span></div>
+        <div class="p-progress" role="slider" tabindex="0" aria-label="Posição na história" aria-valuemin="0" aria-valuemax="100"><span></span></div>
       </div>`);
     bar = document.querySelector(".player");
 
@@ -200,9 +257,15 @@ const Player = (() => {
       if (act === "forward") api.skip(10);
       if (act === "close") api.close();
     });
-    bar.querySelector(".p-progress").addEventListener("click", (e) => {
-      const r = e.currentTarget.getBoundingClientRect();
-      api.seek((e.clientX - r.left) / r.width);
+    const progress = bar.querySelector(".p-progress");
+    makeScrubber(progress, {
+      onDrag(f) {
+        if (f === null) return render(state());
+        setProgress(progress, f, audio.duration);
+        showTime(f * (audio.duration || 0));
+      },
+      onSeek: (f) => api.seek(f),
+      onStep: (dir) => api.skip(dir * 5),
     });
 
     ["play", "pause", "loadedmetadata", "seeked"].forEach((ev) => audio.addEventListener(ev, () => { emit(); save(); }));
