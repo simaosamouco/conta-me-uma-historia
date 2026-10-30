@@ -3,7 +3,7 @@
 
 const APPLE = `<svg viewBox="0 0 32 32" aria-hidden="true">
   <path d="M16 9c-2-2.2-6.5-2.6-9 .4C4.3 12.6 5 19 8 23.6c1.7 2.6 3.8 4.4 6 3.6.9-.3 1.4-.6 2-.6s1.1.3 2 .6c2.2.8 4.3-1 6-3.6 3-4.6 3.7-11 1-14.2C22.5 6.4 18 6.8 16 9Z" fill="#cf4428"/>
-  <path d="M16 9c0-2.6.8-4.6 2.4-6" stroke="#2b2420" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M16 9c0-2.6.8-4.6 2.4-6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
   <path d="M17.4 6.2c1.8-1.9 4.6-2.2 6.6-1.4-1 2-3.6 3.4-6.6 1.4Z" fill="#2f5a45"/>
 </svg>`;
 
@@ -90,6 +90,7 @@ function renderHeader() {
         <a class="brand" href="index.html">${APPLE}<span>Conta-me Uma História</span></a>
         <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
         <nav class="nav" id="nav">${links}</nav>
+        <button class="theme-toggle" type="button"></button>
       </div>
     </header>`;
   markCurrentPage();
@@ -103,6 +104,44 @@ function renderHeader() {
   nav.addEventListener("click", (e) => {
     if (e.target.tagName === "A") nav.classList.remove("open");
   });
+
+  setupThemeToggle();
+}
+
+// MARK: Tema claro / escuro
+
+const THEME_ICONS = {
+  dark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg>`,
+  light: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
+};
+
+// O <head> de cada página já pôs data-theme; aqui só se muda e se guarda a escolha.
+function setupThemeToggle() {
+  const button = document.querySelector(".theme-toggle");
+  const system = matchMedia("(prefers-color-scheme: dark)");
+  const root = document.documentElement;
+
+  const show = () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    button.innerHTML = THEME_ICONS[next];
+    button.setAttribute("aria-label", next === "dark" ? "Mudar para modo escuro" : "Mudar para modo claro");
+    button.title = button.getAttribute("aria-label");
+  };
+  const apply = (theme) => { root.dataset.theme = theme; show(); };
+
+  button.addEventListener("click", () => {
+    const theme = root.dataset.theme === "dark" ? "light" : "dark";
+    try { localStorage.setItem("tema", theme); } catch {}
+    apply(theme);
+  });
+  // Sem escolha guardada, acompanha o sistema quando este muda.
+  system.addEventListener("change", (e) => {
+    let saved = null;
+    try { saved = localStorage.getItem("tema"); } catch {}
+    if (!saved) apply(e.matches ? "dark" : "light");
+  });
+  if (!root.dataset.theme) root.dataset.theme = system.matches ? "dark" : "light";
+  show();
 }
 
 function markCurrentPage() {

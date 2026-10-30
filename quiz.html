@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Consegues acertar? · Conta-me Uma História</title>
+  <script>
+    // Tema antes de desenhar a página, para não piscar: o escolhido no botão ou, se nenhum, o do sistema.
+    try { var tema = localStorage.getItem("tema"); } catch (e) {}
+    document.documentElement.dataset.theme = tema || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
@@ -14,6 +19,12 @@
       --right-bg: #e1f0e4;
       --wrong: #c23c22;
       --wrong-bg: #fbe0d8;
+    }
+    :root[data-theme="dark"] {
+      --right: #5cb67c;
+      --right-bg: #1f3326;
+      --wrong: #ef6d52;
+      --wrong-bg: #3d2119;
     }
 
     .quiz { max-width: 720px; margin: 0 auto; padding: clamp(36px, 6vw, 72px) 0 96px; }
@@ -49,7 +60,7 @@
       padding: 14px 18px;
       border: 1.5px solid var(--line);
       border-radius: 14px;
-      background: #fffaf2;
+      background: var(--card);
       color: var(--ink);
       font: inherit;
       font-size: 17px;
@@ -97,6 +108,7 @@
     /* Botão neutro: o verde e o vermelho ficam reservados para certo/errado */
     .btn-dark { background: var(--ink); border-color: var(--ink); color: var(--paper); }
     .btn-dark:hover { background: #000; }
+    :root[data-theme="dark"] .btn-dark:hover { background: #fff; }
 
     /* ---------- Resultado ---------- */
 

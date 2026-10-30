@@ -9,6 +9,10 @@
   --leaf: #2f5a45;
   --mustard: #e2a63a;
   --night: #1f1b2b;
+  --card: #fffaf2;
+  --on-apple: #fff;
+  --frame: #fff;
+  --warn-bg: #f6dcc9;
 
   --font-display: "Young Serif", Georgia, serif;
   --font-body: "Instrument Sans", system-ui, sans-serif;
@@ -22,6 +26,28 @@
 }
 
 html.has-player { --chrome-h: 124px; }
+
+/* Modo escuro: o tema vem de data-theme no <html> (posto no <head> de cada página e mudado pelo botão do cabeçalho) */
+:root { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #1d1916;
+  --paper-2: #2a241f;
+  --ink: #f0e7d8;
+  --ink-soft: #b3a695;
+  --line: #423a32;
+  --apple: #e8603f;
+  --apple-dark: #f07a5c;
+  --leaf: #284b3a;
+  --mustard: #e7b04a;
+  --night: #2a2440;
+  --card: #25201c;
+  --on-apple: #1d1916;
+  --frame: #f0e7d8;
+  --warn-bg: #4a2a20;
+}
+/* A barra do leitor continua escura com letras claras, só um pouco mais clara que o fundo */
+:root[data-theme="dark"] .player { --ink: #322b25; --paper: #f0e7d8; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -78,8 +104,7 @@ p { margin: 0 0 1em; }
 .site-header .wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: 16px;
   height: 68px;
 }
 
@@ -98,7 +123,24 @@ p { margin: 0 0 1em; }
 .nav {
   display: flex;
   gap: 4px;
+  margin-left: auto;
 }
+
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.theme-toggle:hover { border-color: var(--ink); background: var(--paper-2); }
+.theme-toggle svg { width: 18px; height: 18px; }
 
 .nav a {
   text-decoration: none;
@@ -125,7 +167,7 @@ p { margin: 0 0 1em; }
 }
 
 @media (max-width: 760px) {
-  .nav-toggle { display: block; }
+  .nav-toggle { display: block; margin-left: auto; }
   .nav {
     display: none;
     position: absolute;
@@ -141,6 +183,16 @@ p { margin: 0 0 1em; }
   .nav a { padding: 12px 0; border-radius: 0; border-bottom: 1px solid var(--line); }
   .nav a[aria-current="page"] { background: none; color: var(--apple); }
   .brand { font-size: 19px; }
+}
+
+/* Telemóveis estreitos: marca, menu e botão do tema têm de caber numa linha */
+@media (max-width: 480px) {
+  .site-header .wrap { gap: 10px; }
+  .brand { font-size: 16px; gap: 8px; min-width: 0; }
+  .brand svg { width: 22px; height: 22px; }
+  .brand span { overflow: hidden; text-overflow: ellipsis; }
+  .nav-toggle { padding: 6px 11px; }
+  .theme-toggle { width: 34px; height: 34px; }
 }
 
 /* ---------- Audio player bar ---------- */
@@ -249,7 +301,7 @@ p { margin: 0 0 1em; }
 }
 
 .btn:hover { transform: translateY(-2px); }
-.btn-primary { background: var(--apple); border-color: var(--apple); color: #fff; }
+.btn-primary { background: var(--apple); border-color: var(--apple); color: var(--on-apple); }
 .btn-primary:hover { background: var(--apple-dark); border-color: var(--apple-dark); }
 .btn-ghost { background: transparent; }
 .btn-ghost:hover { background: var(--ink); color: var(--paper); }
@@ -306,7 +358,7 @@ p { margin: 0 0 1em; }
 .cover-stack a {
   position: absolute;
   width: 62%;
-  border: 8px solid #fff;
+  border: 8px solid var(--frame);
   box-shadow: 0 18px 40px -18px rgba(43, 36, 32, 0.45);
   transition: transform 0.25s ease;
 }
@@ -435,7 +487,7 @@ p { margin: 0 0 1em; }
   color: var(--ink-soft);
 }
 
-.pill-warn { background: #f6dcc9; color: var(--apple-dark); }
+.pill-warn { background: var(--warn-bg); color: var(--apple-dark); }
 
 @media (max-width: 900px) {
   .steps { grid-template-columns: 1fr 1fr; }
@@ -560,7 +612,7 @@ p { margin: 0 0 1em; }
   padding: 8px 16px;
   border-radius: 999px;
   border: 1.5px solid var(--line);
-  background: #fffaf2;
+  background: var(--card);
   color: var(--ink);
   width: min(260px, 100%);
 }
@@ -654,7 +706,7 @@ p { margin: 0 0 1em; }
   right: 0;
   width: 240px;
   padding: 6px;
-  background: #fffaf2;
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: 12px;
   box-shadow: 0 14px 34px -12px rgba(43, 36, 32, 0.35);
@@ -699,7 +751,7 @@ p { margin: 0 0 1em; }
   transition: background 0.15s ease;
 }
 .track .play:hover { background: var(--ink); color: var(--paper); }
-.track.playing .play { background: var(--apple); border-color: var(--apple); color: #fff; }
+.track.playing .play { background: var(--apple); border-color: var(--apple); color: var(--on-apple); }
 .track .play svg { width: 16px; height: 16px; }
 .track .t { font-family: var(--font-display); font-size: 22px; line-height: 1.2; }
 .track .t small { font-family: var(--font-body); font-size: 13px; color: var(--ink-soft); margin-left: 8px; }
