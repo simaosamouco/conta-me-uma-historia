@@ -169,7 +169,7 @@
     // Capas no topo
     const picks = [1, 11, 5].map((i) => ILLUSTRATED[i]);
     document.getElementById("cover-stack").innerHTML = picks.map((s) =>
-      `<a href="${s.text}" target="_blank" rel="noopener" title="${s.title}">
+      `<a href="livro.html?h=${s.book}" title="${s.title}">
          <img src="${IMG(s.cover)}" alt="${s.title}" loading="eager">
        </a>`).join("");
 
