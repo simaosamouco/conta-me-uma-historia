@@ -19,7 +19,7 @@ const PAGES = [
   { href: "index.html", label: "Início" },
   { href: "ler.html", label: "Ler" },
   { href: "ouvir.html", label: "Ouvir" },
-  { href: "index.html#participar", label: "Participar" },
+  { href: "index.html#enviar", label: "Enviar" },
   { href: "index.html#como-funciona", label: "Como funciona" },
 ];
 
@@ -160,7 +160,8 @@ function renderFooter() {
       <div class="wrap">
         <p>As histórias aqui publicadas são textos originais do criador deste sítio.<br>
            As imagens que as ilustram foram criadas com IA.</p>
-        <p><a href="mailto:conta-meumahistoria@sapo.pt">conta-meumahistoria@sapo.pt</a></p>
+        <p>© 2013–2026 Conta-me Uma História<br>
+           Criado por Fernando M. Barros · Aveiro, Portugal</p>
       </div>
     </footer>`;
 }
@@ -401,8 +402,9 @@ async function go(href, push = true) {
   });
 
   const target = url.hash && document.getElementById(decodeURIComponent(url.hash.slice(1)));
-  if (target) target.scrollIntoView();
-  else window.scrollTo(0, 0);
+  // Página nova: salta logo para o sítio, sem a deslocação suave do CSS.
+  if (target) target.scrollIntoView({ behavior: "instant" });
+  else window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 document.addEventListener("click", (e) => {

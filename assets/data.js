@@ -42,28 +42,23 @@ window.ILLUSTRATED = [
     text: PDF("1606fbf5b5a348c4bbdb9a63abe2f31d"), quiz: PDF("8e41013186fc47f78ac8311ad68c0d46"), pictures: PDF("b35c78e59b2a433dafa44f0f766f8c72") },
 ];
 
-// Histórias do arquivo (só texto).
-window.ARCHIVE = [
-  { title: "Um Segredo Azul", book: "um-segredo-azul", blurb: "Nunca o azul foi tão mágico…", age: [5, 12], pdf: PDF("fc05a1ae812c44d2a587637c6f276592") },
-  { title: "Na Ilha do Pessegueiro", book: "na-ilha-do-pessegueiro", blurb: "Uma aventura com piratas…", age: [7, 12], pdf: PDF("24c199f0cacc4b7b87a35101ece52e4d") },
-  { title: "Rosa e Azul", book: "rosa-e-azul", blurb: "Uma história sobre a cor da nossa pele…", age: [8, 12], pdf: PDF("ab0c4bc8dd4d4f7b8e0ffcabc66d3ce8") },
-  { title: "Tomás e o Duende", book: "tomas-e-o-duende", blurb: "Tudo é diferente em Fantália…", age: [5, 10], pdf: PDF("a717bc510d1e4084ab9466f3f5672f1f") },
-  { title: "Uma Prenda Especial", book: "uma-prenda-especial", blurb: "Uma história para o Natal…", age: [5, 10], pdf: PDF("39e5398876e8424eac22117d22b83e43") },
-  { title: "As Botas Não São Para Todos", book: "as-botas-nao-sao-para-todos", blurb: "Nem todos podem ser o Gato das Botas…", age: [5, 10], pdf: PDF("2c99e8b4a28342bc9224767d6dae42e0") },
-  { title: "Amizade", book: "amizade", blurb: "Amigos do coração…", age: [7, 10], pdf: PDF("c81fa77bfaea492aad5b2dceb77ba593") },
-  { title: "Um Livro Só com Palavras", book: "um-livro-so-com-palavras", blurb: "Um livro pode ser uma aventura…", age: [8, 12], pdf: PDF("4ad1c4c50ace488eafead5c3d1814445") },
-  { title: "O Amuleto", book: "o-amuleto", blurb: "Uma aventura no antigo Egito…", age: [8, 12], pdf: PDF("91133901baf540caa5af322f1baf829d") },
-  { title: "O Tesouro", book: "o-tesouro", blurb: "Todos temos um tesouro…", age: [5, 10], pdf: PDF("74c7c4ec899d44dfb59b60122ba693e8") },
-  { title: "Pacholinha e Toc Toc", book: "pacholinha-e-toc-toc", blurb: "Vamos aprender com estes dois amigos…", age: [5, 10], pdf: PDF("1d25c81327304eecb21fc2f8f986575e") },
-  { title: "Pequenos Amigos", book: "pequenos-amigos", blurb: "Tanta coisa para descobrir…", age: [7, 12], pdf: PDF("5f940216f0b54cc2bd4b28a7df85843e") },
-  { title: "No Mundo dos Pequeninos", book: "no-mundo-dos-pequeninos", blurb: "E se de repente ficássemos muito pequeninos?", age: [5, 7], pdf: PDF("9c5adb793afd428e81fa98a8d1c220e0") },
-  { title: "Uma Aventura no Mar", book: "uma-aventura-no-mar", blurb: "O mar pode ser mágico…", age: [7, 12], pdf: PDF("339cde6b994f484e83b03ba11802de56") },
-  { title: "Um Bosque Encantado", book: "um-bosque-encantado", blurb: "Princesas, fadas e duendes…", age: [5, 10], pdf: PDF("fa0c2fc89d1f4107817dadc2f5a8ea49") },
-  { title: "A Outra História do Chapeuzinho Vermelho", book: "a-outra-historia-do-chapeuzinho-vermelho", blurb: "Outro final feliz para a conhecida história…", age: [5, 10], pdf: PDF("0f6a7a58fcc743489d68061369c416a3") },
-  { title: "Papão", book: "papao", blurb: "Histórias de fantasmas, ou talvez não…", age: [12, 12], pdf: PDF("8c59e28a152d42559317b1b061e95fd2") },
-  { title: "Os Guardiães", book: "os-guardiaes", blurb: "Os defensores da Paz…", age: [7, 12], pdf: PDF("e6f8af9437834ae885326da160036a3e") },
-  { title: "O Cavalinho Mágico", book: "o-cavalinho-magico", blurb: "Um menino e o seu cavalinho muito especial…", age: [5, 8], pdf: PDF("c766f8e3ca7e4db4bbe490acbc84b8b3") },
-  { title: "O Mundo Fantástico das Cores", book: "o-mundo-fantastico-das-cores", blurb: "E a magia colorida pode acontecer…", age: [7, 12], pdf: PDF("b17cd6e6ba4f4e8b98f46523a6b92b34") },
+// Histórias enviadas por amigos do Conta-me Uma História (abrem o PDF original).
+window.RECEIVED = [
+  { title: "O Aprendiz Espertalhão", author: "Márcio Silva", pdf: PDF("3142f508f0084c178a9eaa62aacdb8a4") },
+  { title: "Hoje É o Seu Dia de Sorte", author: "Sonia Regina Rocha Rodrigues", pdf: PDF("c07dbd61e6c7480d92bbd83c78915736") },
+  { title: "Yuli e o Mar", author: "Luis Antonio Rincón (México)", pdf: PDF("03e198462a49415c8c92652c592d61c9") },
+  { title: "Itzelina e os Raios de Sol", author: "Luis Antonio Rincón (México)", pdf: PDF("77f11d12a558459a92889c3f1aa67ff6") },
+  { title: "Branca e os 7 Surdos", author: "Francisco Goulão", note: "Uma história para crianças surdas", pdf: PDF("987d6d18111646a69f611fb1190bbf57") },
+  { title: "Trofa: Coração do Mundo", author: "Eva Cardim de Almeida", pdf: PDF("aa46dd9b177a44d58c904fe8880cf624") },
+  { title: "Zapata e Espiga", author: "Telma Quintiliano", pdf: PDF("dbc45f740400414695cebdc5bf4faf9b") },
+  { title: "O Jardim de Maria", author: "Telma Quintiliano", pdf: PDF("6e84f03cf1114f01b75161445740dda0") },
+  { title: "Um Grande Valor", author: "Telma Quintiliano", pdf: PDF("3632dab092934c29b52734d11c4cfcdb") },
+  { title: "Saudade", author: "Telma Quintiliano", pdf: PDF("77394c9c64674f78a914d4b4ecc211b6") },
+  { title: "A Prenda Ideal Para Mafalda", author: "Raquel Santos", pdf: PDF("f83725ab70934e2ba2b66821c8eb4e7d") },
+  { title: "A Lua Que Não Conseguia Crescer", author: "Gabriela", pdf: PDF("e02ecd9662ae40a5b8b8c9d66e81e4e9") },
+  { title: "A Gata e o Cão", author: "Gabriela", pdf: PDF("74a93cc1c6a14e3fbe024226b468690f") },
+  { title: "O Joaquim e a Alda", author: "Marta", pdf: PDF("e0a98033317c40c580edda9d538b0d94") },
+  { title: "O Ratinho Toly", author: "Marta", pdf: PDF("a039f8b2d8c349a18f0a10fa023d8aa2") },
 ];
 
 window.AUDIO = [

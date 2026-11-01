@@ -45,12 +45,11 @@
 
     <section style="margin-bottom: 96px;">
       <div class="section-head">
-        <h2>Do arquivo</h2>
-        <p>Histórias para ler ou descarregar em PDF.</p>
+        <h2>Histórias recebidas</h2>
+        <p>Escritas por amigos do Conta-me Uma História, crianças e adultos. Abrem em PDF.</p>
       </div>
-      <ul class="archive" id="archive"></ul>
-      <p class="empty" id="archive-empty">Nenhuma história do arquivo corresponde à pesquisa.</p>
-      <p class="note" style="margin-top: 32px;">As próximas histórias estão a caminho.</p>
+      <ul class="archive" id="received"></ul>
+      <p class="empty" id="received-empty">Nenhuma história recebida corresponde à pesquisa.</p>
     </section>
   </main>
 
@@ -63,7 +62,7 @@
     const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
     const illustratedEl = document.getElementById("illustrated");
-    const archiveEl = document.getElementById("archive");
+    const receivedEl = document.getElementById("received");
 
     // Histórias já convertidas em livro abrem no leitor; as restantes abrem o PDF.
     const readLink = (s) => s.book
@@ -99,15 +98,14 @@
         ${downloadMenu(s)}
       </article>`).join("");
 
-    archiveEl.innerHTML = ARCHIVE.map((s, i) => `
+    receivedEl.innerHTML = RECEIVED.map((s, i) => `
       <li data-i="${i}">
-        <a class="row" ${s.book ? `href="livro.html?h=${s.book}"` : `href="${s.pdf}" target="_blank" rel="noopener"`}>
+        <a class="row" href="${s.pdf}" target="_blank" rel="noopener">
           <span class="t">${s.title}</span>
-          <span class="b">${s.blurb}</span>
-          <span class="a">${ageLabel(s.age)}</span>
-          <span class="go" aria-hidden="true">${s.book ? "→" : "↗"}</span>
+          <span class="b">${s.author}${s.note ? ` · ${s.note}` : ""}</span>
+          <span class="a"></span>
+          <span class="go" aria-hidden="true">↗</span>
         </a>
-        ${downloadMenu(s)}
       </li>`).join("");
 
     // Um menu de cada vez; fecha ao clicar fora, ao escolher um ficheiro ou com Esc.
@@ -139,11 +137,12 @@
     let query = "";
 
     function matches(s) {
-      if (age !== "all") {
+      // As histórias recebidas não têm idade indicada, por isso o filtro de idade não as esconde.
+      if (age !== "all" && s.age) {
         const [lo, hi] = age.split("-").map(Number);
         if (s.age[1] < lo || s.age[0] > hi) return false;
       }
-      if (query && !norm(s.title + " " + s.blurb).includes(query)) return false;
+      if (query && !norm([s.title, s.blurb, s.author, s.note].filter(Boolean).join(" ")).includes(query)) return false;
       return true;
     }
 
@@ -177,7 +176,7 @@
     function apply() {
       const groups = [
         { list: illustratedEl, items: [...illustratedEl.querySelectorAll(":scope > .story:not(.ghost)")], data: ILLUSTRATED, empty: "illustrated-empty" },
-        { list: archiveEl, items: [...archiveEl.querySelectorAll(":scope > li:not(.ghost)")], data: ARCHIVE, empty: "archive-empty" },
+        { list: receivedEl, items: [...receivedEl.querySelectorAll(":scope > li:not(.ghost)")], data: RECEIVED, empty: "received-empty" },
       ];
       const all = groups.flatMap((g) => g.items);
 

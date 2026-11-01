@@ -786,7 +786,7 @@
     (async () => {
       try {
         book = await loadBook();
-        meta = [...(window.ILLUSTRATED || []), ...(window.ARCHIVE || [])].find((s) => s.book === book.slug);
+        meta = (window.ILLUSTRATED || []).find((s) => s.book === book.slug);
         document.title = `${book.title} · Conta-me Uma História`;
         $("bar-title").textContent = book.title;
         dlMenu.innerHTML = downloads().map((d) => `
