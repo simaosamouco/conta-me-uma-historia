@@ -208,6 +208,10 @@
     }
     .page-body figure img { width: 100%; height: auto; display: block; }
 
+    /* Ilustração a meio da página, logo a seguir ao parágrafo da cena: fica dentro das margens */
+    .page-body figure.inline { margin: 22px 0 24px; }
+    .page-body figure.inline img { border-radius: 3px; }
+
     /* Imagens pequenas: dentro das margens, sem esticar */
     .page-body figure.small { margin: 14px auto 18px; }
     .page-body figure.small img { border-radius: 3px; }
@@ -312,8 +316,6 @@
       padding: 0 var(--pad-x) 56px;
       text-align: center;
     }
-    .end-page figure { margin: 0 calc(-1 * var(--pad-x)); width: calc(100% + 2 * var(--pad-x)); }
-    .end-page figure img { width: 100%; display: block; }
     .end-page .fim { font-family: var(--font-display); font-size: 56px; margin: auto 0 8px; }
     .end-page .orn { color: var(--apple); letter-spacing: 0.5em; margin-bottom: auto; }
     .end-page .next-steps { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; font-family: var(--font-body); }
@@ -438,16 +440,16 @@
       measure.innerHTML = `<div class="page"><div class="page-body"></div></div>`;
       const body = measure.querySelector(".page-body");
       const fits = () => body.scrollHeight <= body.clientHeight + 1;
-      const figure = (b) => `<figure><img src="${b.src}" alt="" style="aspect-ratio:${b.ratio}"></figure>`;
+      // No topo da página a ilustração ocupa a largura toda; a meio fica dentro das margens.
+      const figure = (b, top) =>
+        `<figure${top ? "" : ' class="inline"'}><img src="${b.src}" alt="" style="aspect-ratio:${b.ratio}"></figure>`;
 
       const pages = [];
-      const pending = [];
       let first = true;
 
-      const flush = (last = false) => {
+      const flush = () => {
         if (body.innerHTML) pages.push({ kind: "text", html: body.innerHTML });
         body.innerHTML = "";
-        if (pending.length && !last) body.insertAdjacentHTML("beforeend", figure(pending.shift()));
       };
 
       // Parte um parágrafo em palavras sem cortar tags (<em>, <sup …>).
@@ -482,6 +484,20 @@
         }
       }
 
+      // A ilustração fica logo a seguir ao parágrafo da cena. Se já não couber,
+      // a página acaba ali (mesmo com espaço em branco) e ela abre a página seguinte.
+      function addFigure(block) {
+        if (!body.innerHTML) {
+          body.insertAdjacentHTML("beforeend", figure(block, true));
+          return;
+        }
+        body.insertAdjacentHTML("beforeend", figure(block, false));
+        if (fits()) return;
+        body.lastElementChild.remove();
+        flush();
+        body.insertAdjacentHTML("beforeend", figure(block, true));
+      }
+
       function addSmallFigure(block) {
         const w = Math.min(PAGE_W * 0.7, 300 * block.ratio);
         const html = `<figure class="small" style="width:${Math.round(w)}px"><img src="${block.src}" alt="" style="aspect-ratio:${block.ratio}"></figure>`;
@@ -495,8 +511,7 @@
       for (const block of book.blocks) {
         if (block.type === "img") {
           if (block.small) addSmallFigure(block);
-          else if (!body.innerHTML) body.insertAdjacentHTML("beforeend", figure(block));
-          else pending.push(block);
+          else addFigure(block);
           continue;
         }
 
@@ -516,26 +531,13 @@
 
       // Palavras novas (notas de rodapé do PDF), numa página própria.
       if (book.notes && book.notes.length) {
-        flush(true);
-        while (pending.length) {
-          body.insertAdjacentHTML("beforeend", figure(pending.shift()));
-          pages.push({ kind: "text", html: body.innerHTML });
-          body.innerHTML = "";
-        }
+        flush();
         body.insertAdjacentHTML("beforeend", `<h2 class="gloss-title">Palavras novas</h2>`);
         for (const n of book.notes) {
           addParagraph(`<span class="num">${n.n}</span> <b>${escape(n.word)}</b> — ${escape(n.text)}`, "gloss");
         }
       }
-      flush(true);
-
-      // Ilustrações que sobraram: cada uma na sua página, a última vai para a página final.
-      while (pending.length > 1) {
-        body.insertAdjacentHTML("beforeend", figure(pending.shift()));
-        pages.push({ kind: "text", html: body.innerHTML });
-        body.innerHTML = "";
-      }
-      const finalImage = pending.shift();
+      flush();
 
       // Números de página
       pages.forEach((p, i) => (p.folio = i + 1));
@@ -564,7 +566,6 @@
         ...pages,
         { kind: "end", html: `
           <div class="end-page">
-            ${finalImage ? `<figure><img src="${finalImage.src}" alt="" style="aspect-ratio:${finalImage.ratio}"></figure>` : ""}
             <p class="fim">Fim</p>
             <p class="orn" aria-hidden="true">✦ ✦ ✦</p>
             <div class="next-steps">${links.join("")}</div>
