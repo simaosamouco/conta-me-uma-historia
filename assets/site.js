@@ -276,7 +276,7 @@ const Player = (() => {
         <div class="wrap player-inner">
           <div class="p-info">
             <span class="p-label">A ouvir</span>
-            <a class="p-title" href="ouvir.html"></a>
+            <a class="p-title" href="ouvir.html#a-tocar"></a>
           </div>
           <div class="p-controls">
             <button class="p-btn" data-act="back" aria-label="Recuar 10 segundos">${ICONS.back}</button>
@@ -296,6 +296,13 @@ const Player = (() => {
       if (act === "back") api.skip(-10);
       if (act === "forward") api.skip(10);
       if (act === "close") api.close();
+    });
+    // O título leva a Ouvir e desliza até à história (ouvir.html trata do #a-tocar).
+    // Já em Ouvir, só desliza.
+    bar.querySelector(".p-title").addEventListener("click", (e) => {
+      if (document.body.dataset.page !== "ouvir") return;
+      e.preventDefault();
+      scrollToPlaying();
     });
     const progress = bar.querySelector(".p-progress");
     makeScrubber(progress, {
@@ -341,6 +348,15 @@ const Player = (() => {
 })();
 
 window.Player = Player;
+
+// Desliza (com calma) até à história que está no leitor, na lista de Ouvir.
+function scrollToPlaying() {
+  const src = Player.current?.src;
+  const li = src && [...document.querySelectorAll(".track")].find((el) => AUDIO[el.dataset.i]?.src === src);
+  if (!li) return;
+  const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  li.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "center" });
+}
 
 // MARK: Navegação sem recarregar
 

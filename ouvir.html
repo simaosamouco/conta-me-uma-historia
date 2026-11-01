@@ -97,6 +97,12 @@
       });
     }
     Player.subscribe(draw, window.pageSignal);
+
+    // Vindo do título do leitor: a página abre no topo e depois desliza até à história que está a tocar.
+    if (location.hash === "#a-tocar") {
+      history.replaceState(history.state, "", location.pathname + location.search);
+      setTimeout(scrollToPlaying, 60);
+    }
   </script>
 </body>
 </html>
