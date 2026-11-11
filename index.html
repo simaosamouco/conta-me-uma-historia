@@ -61,15 +61,15 @@
       <div class="featured" style="padding: clamp(48px, 7vw, 88px) 0;">
         <div class="wrap">
           <div>
-            <p class="eyebrow">Especial Halloween</p>
-            <h2>Já leste <br>A Velha Mansão?</h2>
-            <p>Uma casa antiga, portas que rangem e um mistério à espera de quem tiver coragem para entrar. Para leitores dos 7 aos 9 anos.</p>
+            <p class="eyebrow">História nova</p>
+            <h2>Já leste <br>O Cavalinho Mágico?</h2>
+            <p>Um amigo muito especial… O João Gonçalo e o Cavalo Branco brincam todo o dia no campo, mas à noite, à janela, há uma surpresa à espera. Para leitores dos 4 aos 8 anos.</p>
             <div class="hero-actions">
               <a class="btn btn-primary" id="featured-read">Abrir o livro</a>
               <a class="btn btn-ghost" id="featured-quiz">Consegues acertar?</a>
             </div>
           </div>
-          <img id="featured-img" alt="Ilustração de A Velha Mansão">
+          <img id="featured-img" alt="Ilustração de O Cavalinho Mágico">
         </div>
       </div>
     </section>
@@ -138,21 +138,22 @@
 
   <div data-footer></div>
 
-  <script src="assets/data.js"></script>
+  <script src="assets/data.js?v=2"></script>
   <script src="assets/site.js"></script>
   <script>
     // Capas no topo
-    const picks = [1, 11, 5].map((i) => ILLUSTRATED[i]);
+    const byBook = (slug) => ILLUSTRATED.find((s) => s.book === slug);
+    const picks = ["a-beleza-dos-amigos", "brincadeira-de-bruxinha", "lacarote-o-cavaleiro-trapalhao"].map(byBook);
     document.getElementById("cover-stack").innerHTML = picks.map((s) =>
       `<a href="livro.html?h=${s.book}" title="${s.title}">
          <img src="${IMG(s.cover)}" alt="${s.title}" loading="eager">
        </a>`).join("");
 
     // Destaque
-    const mansion = ILLUSTRATED[0];
-    document.getElementById("featured-img").src = IMG(mansion.cover, 800, 600);
-    document.getElementById("featured-read").href = `livro.html?h=${mansion.book}`;
-    document.getElementById("featured-quiz").href = quizHref(mansion);
+    const featured = byBook("o-cavalinho-magico");
+    document.getElementById("featured-img").src = IMG(featured.cover, 800, 600);
+    document.getElementById("featured-read").href = `livro.html?h=${featured.book}`;
+    document.getElementById("featured-quiz").href = quizHref(featured);
 
     // Separadores
     const tabs = document.querySelectorAll('[role="tab"]');

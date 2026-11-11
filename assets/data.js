@@ -10,8 +10,8 @@ const MP3 = (id) => `https://music.wixstatic.com/mp3/d40862_${id}.mp3`;
 // `book` = slug do livro em assets/books/ (gerado com tools/pdf_to_book.py), lido em livro.html.
 // `quizPage` = há questionário em assets/books/<book>.quiz.js (tools/pdf_to_quiz.py), aberto em quiz.html.
 window.ILLUSTRATED = [
-  { title: "A Velha Mansão", blurb: "Lê se tiveres coragem…", age: [7, 9], cover: "bb3cf53a61bc4d8abefc954c5971f3ca~mv2.png", book: "a-velha-mansao", quizPage: true,
-    text: PDF("de20dd48179343008104f4637b72f1f9"), quiz: PDF("b2e65296566c47558f0d1cb1b6a1f552"), pictures: PDF("cdb56f4c70a6492f807f5dfc2aa05b39") },
+  { title: "O Cavalinho Mágico", book: "o-cavalinho-magico", quizPage: true, blurb: "Um amigo muito especial…", age: [4, 8], cover: "52a6cd7c90f448faa173cd39f20fcfc3~mv2.png",
+    text: PDF("ed87f583ce5a414b9dd080eb00b1ff3e"), quiz: PDF("8ae17e878942425b96e780001b9bc265"), pictures: PDF("4a5077ebb5334b8bb20179ed10fdb35b") },
   { title: "A Beleza dos Amigos", book: "a-beleza-dos-amigos", quizPage: true, blurb: "Verdadeiros amigos são sempre bonitos…", age: [4, 9], cover: "2ba5e258140a465e863df90b1c01c70e~mv2.jpg",
     text: PDF("c5d52a76b4ef4b3dac4ba5c5997bacb2"), quiz: PDF("042b9caa5f3e4ff09d54813ee327b64f"), pictures: PDF("e38d82aa484b4d22a66bdb7b23e65179") },
   { title: "No Vale dos Pequenotes", book: "no-vale-dos-pequenotes", quizPage: true, blurb: "O mundo fantástico dum povo de baixinhos…", age: [5, 9], cover: "d7f037aca70b4f84a9a0b7ca760106d2~mv2.jpg",
@@ -40,6 +40,8 @@ window.ILLUSTRATED = [
     text: PDF("eb18fd5188b14a1083169433d2b2af6c"), quiz: PDF("932046dcf2ec4a1d8b5d05338d7efa4f"), pictures: PDF("a326513603b54d01bf7a774b43d80cf6") },
   { title: "Uma Família Real Preguiçosa", book: "uma-familia-real-preguicosa", quizPage: true, blurb: "Um pequeno teatrinho…", age: [7, 10], cover: "bed4b8ed14ef4900b135937d719968a3~mv2.png",
     text: PDF("1606fbf5b5a348c4bbdb9a63abe2f31d"), quiz: PDF("8e41013186fc47f78ac8311ad68c0d46"), pictures: PDF("b35c78e59b2a433dafa44f0f766f8c72") },
+  { title: "A Velha Mansão", blurb: "Lê se tiveres coragem…", age: [7, 9], cover: "bb3cf53a61bc4d8abefc954c5971f3ca~mv2.png", book: "a-velha-mansao", quizPage: true,
+    text: PDF("de20dd48179343008104f4637b72f1f9"), quiz: PDF("b2e65296566c47558f0d1cb1b6a1f552"), pictures: PDF("cdb56f4c70a6492f807f5dfc2aa05b39") },
 ];
 
 // Histórias enviadas por amigos do Conta-me Uma História (abrem o PDF original).
