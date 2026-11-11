@@ -59,12 +59,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "O duende apanhou um pequeno ramo caído atrás dele e continuou escondido. Aproveitando o momento em que a bruxinha passava do outro lado da fogueira, esticou-se e empurrou o ramo para junto da panela. Voltou a esconder-se bem atrás da árvore. Assim, quando Obimi passou outra vez a saltitar do lado de cá, pumba!, tropeçou no pau e caiu no chão. Nesse momento, o duende saiu do esconderijo e correu em direção à bruxinha. Saltou para cima das costas da pobre coitada e desatou aos saltos em cima dela, gritando:"
+   "html": "O duende apanhou um pequeno ramo caído atrás dele e continuou escondido. Aproveitando o momento em que a bruxinha passava do outro lado da fogueira, esticou-se e empurrou o ramo para junto da panela. Voltou a esconder-se bem atrás da árvore. Assim, quando Obimi passou outra vez a saltitar do lado de cá, pumba!, tropeçou no pau e caiu no chão."
   },
   {
    "type": "img",
    "src": "assets/books/brincadeira-de-bruxinha/03.jpg",
    "ratio": 1.787
+  },
+  {
+   "type": "p",
+   "html": "Nesse momento, o duende saiu do esconderijo e correu em direção à bruxinha. Saltou para cima das costas da pobre coitada e desatou aos saltos em cima dela, gritando:",
+   "cont": true
   },
   {
    "type": "p",

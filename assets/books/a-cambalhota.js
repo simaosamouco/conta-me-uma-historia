@@ -14,12 +14,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "Fora o bom desempenho que mostrava nos jogos do campeonato distrital, com muitos golos marcados, que o levara a pensar adotar uma imagem de marca, tal como muitos jogadores profissionais. Ou seja, resolveu que, de cada vez que marcasse um golo, deveria dar sempre uma cambalhota a seguir. Assim aconteceu, à medida que foi marcando mais golos."
+   "html": "Fora o bom desempenho que mostrava nos jogos do campeonato distrital, com muitos golos marcados, que o levara a pensar adotar uma imagem de marca, tal como muitos jogadores profissionais."
   },
   {
    "type": "img",
    "src": "assets/books/a-cambalhota/02.jpg",
    "ratio": 1.787
+  },
+  {
+   "type": "p",
+   "html": "Ou seja, resolveu que, de cada vez que marcasse um golo, deveria dar sempre uma cambalhota a seguir. Assim aconteceu, à medida que foi marcando mais golos.",
+   "cont": true
   },
   {
    "type": "img",
@@ -32,12 +37,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "Até que uma vez, acabado de marcar golo e de fazer a cambalhota, ao levantar-se, deparou-se com uma situação inacreditável. Em vez de ser abraçado pelos seus colegas que festejavam o golo, viu-se abraçado por outro indivíduo que vestia uma camisola vermelha da seleção portuguesa. Era nem mais nem menos que Vitinha! Logo de seguida foi abraçado por vários outros que faziam a festa."
+   "html": "Até que uma vez, acabado de marcar golo e de fazer a cambalhota, ao levantar-se, deparou-se com uma situação inacreditável."
   },
   {
    "type": "img",
    "src": "assets/books/a-cambalhota/04.jpg",
    "ratio": 1.773
+  },
+  {
+   "type": "p",
+   "html": "Em vez de ser abraçado pelos seus colegas que festejavam o golo, viu-se abraçado por outro indivíduo que vestia uma camisola vermelha da seleção portuguesa. Era nem mais nem menos que Vitinha! Logo de seguida foi abraçado por vários outros que faziam a festa.",
+   "cont": true
   },
   {
    "type": "img",
@@ -50,12 +60,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "Concentrou-se de novo no jogo, como se jogasse naquela equipa há muito tempo. De repente, do céu nublado começaram a cair os primeiros pingos de chuva. Logo passou a um aguaceiro mais pesado, começando a deixar todos completamente encharcados. Estranhamente, Dino ouviu uma gargalhada perto de si. Voltou-se."
+   "html": "Concentrou-se de novo no jogo, como se jogasse naquela equipa há muito tempo. De repente, do céu nublado começaram a cair os primeiros pingos de chuva. Logo passou a um aguaceiro mais pesado, começando a deixar todos completamente encharcados."
   },
   {
    "type": "img",
    "src": "assets/books/a-cambalhota/06.jpg",
    "ratio": 1.773
+  },
+  {
+   "type": "p",
+   "html": "Estranhamente, Dino ouviu uma gargalhada perto de si. Voltou-se.",
+   "cont": true
   },
   {
    "type": "p",

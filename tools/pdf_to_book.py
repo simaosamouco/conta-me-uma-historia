@@ -98,7 +98,7 @@ def main(pdf_path, slug, title):
     doc = fitz.open(pdf_path)
     out_dir = ROOT / "assets" / "books" / slug
     out_dir.mkdir(parents=True, exist_ok=True)
-    for old in out_dir.glob("*.jpg"):
+    for old in out_dir.glob("[0-9][0-9].jpg"):
         old.unlink()
 
     body = body_size(doc)
@@ -153,6 +153,14 @@ def main(pdf_path, slug, title):
 
     def current_paragraph():
         return next((x for x in reversed(blocks) if x["type"] == "p"), None)
+
+    def extend(para, fragment):
+        # Parágrafo que continua depois de uma ilustração (no PDF ela abre a página a meio
+        # do parágrafo): a ilustração fica nesse ponto e o resto segue sem recuo.
+        if blocks[-1]["type"] == "img":
+            blocks.append({"type": "p", "html": fragment, "cont": True})
+        else:
+            para["html"] = join(para["html"], fragment)
 
     for pno, page in enumerate(doc):
         items = sorted(page.get_text("dict")["blocks"], key=lambda b: (round(b["bbox"][1]), b["bbox"][0]))
@@ -237,11 +245,11 @@ def main(pdf_path, slug, title):
                     rest = re.sub(r"^\s*" + re.escape(html.escape(who, quote=False)) + r":\s*", "", fragment)
                     blocks.append({"type": "p", "html": rest, "speaker": who})
                 elif para and "speaker" in para and abs(line_x - sx) < 6:
-                    para["html"] = join(para["html"], fragment)
+                    extend(para, fragment)
                 elif para and "speaker" not in para and close:
-                    para["html"] = join(para["html"], fragment)
+                    extend(para, fragment)
                 elif para and close and t[:1].islower():
-                    para["html"] = join(para["html"], fragment)   # fala que continua na margem
+                    extend(para, fragment)   # fala que continua na margem
                 else:
                     blocks.append({"type": "p", "html": fragment})
                 prev_y = y
@@ -262,7 +270,7 @@ def main(pdf_path, slug, title):
             else:
                 new = line_x > margin + 15
             if para and not new:
-                para["html"] = join(para["html"], fragment)
+                extend(para, fragment)
             else:
                 blocks.append({"type": "p", "html": fragment})
             prev_y = y

@@ -154,12 +154,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "Durante dois meses Pipoca passava sempre pelo local do ninho escondido debaixo da areia para que ninguém lá mexesse. E finalmente, ao início de uma noite, começou a aperceber-se que a areia se mexia naquele sítio. Primeiro uma cabecita, depois uma barbatana pequenina, e aí veio a primeira tartaruguinha bebé. Mesmo sem perceber onde estava virou-se para o lado do mar e lá foi muito depressa em direção à água. Pipoca deu pulinhos de contente."
+   "html": "Durante dois meses Pipoca passava sempre pelo local do ninho escondido debaixo da areia para que ninguém lá mexesse. E finalmente, ao início de uma noite, começou a aperceber-se que a areia se mexia naquele sítio. Primeiro uma cabecita, depois uma barbatana pequenina, e aí veio a primeira tartaruguinha bebé."
   },
   {
    "type": "img",
    "src": "assets/books/a-tartaruga-marinha/06.jpg",
    "ratio": 1.787
+  },
+  {
+   "type": "p",
+   "html": "Mesmo sem perceber onde estava virou-se para o lado do mar e lá foi muito depressa em direção à água. Pipoca deu pulinhos de contente.",
+   "cont": true
   },
   {
    "type": "p",

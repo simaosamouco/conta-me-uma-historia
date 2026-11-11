@@ -203,14 +203,10 @@
       color: var(--apple);
     }
 
-    .page-body figure {
-      margin: calc(-1 * var(--pad-t)) calc(-1 * var(--pad-x)) 26px;
-    }
-    .page-body figure img { width: 100%; height: auto; display: block; }
-
-    /* Ilustração a meio da página, logo a seguir ao parágrafo da cena: fica dentro das margens */
-    .page-body figure.inline { margin: 22px 0 24px; }
-    .page-body figure.inline img { border-radius: 3px; }
+    /* Ilustrações: todas do mesmo tamanho e sempre dentro das margens do texto, no topo ou a meio da página */
+    .page-body figure { margin: 22px 0 24px; }
+    .page-body figure:first-child { margin-top: 4px; }
+    .page-body figure img { width: 100%; height: auto; display: block; border-radius: 3px; }
 
     /* Imagens pequenas: dentro das margens, sem esticar */
     .page-body figure.small { margin: 14px auto 18px; }
@@ -440,9 +436,7 @@
       measure.innerHTML = `<div class="page"><div class="page-body"></div></div>`;
       const body = measure.querySelector(".page-body");
       const fits = () => body.scrollHeight <= body.clientHeight + 1;
-      // No topo da página a ilustração ocupa a largura toda; a meio fica dentro das margens.
-      const figure = (b, top) =>
-        `<figure${top ? "" : ' class="inline"'}><img src="${b.src}" alt="" style="aspect-ratio:${b.ratio}"></figure>`;
+      const figure = (b) => `<figure><img src="${b.src}" alt="" style="aspect-ratio:${b.ratio}"></figure>`;
 
       const pages = [];
       let first = true;
@@ -487,15 +481,11 @@
       // A ilustração fica logo a seguir ao parágrafo da cena. Se já não couber,
       // a página acaba ali (mesmo com espaço em branco) e ela abre a página seguinte.
       function addFigure(block) {
-        if (!body.innerHTML) {
-          body.insertAdjacentHTML("beforeend", figure(block, true));
-          return;
-        }
-        body.insertAdjacentHTML("beforeend", figure(block, false));
-        if (fits()) return;
+        body.insertAdjacentHTML("beforeend", figure(block));
+        if (fits() || body.childElementCount === 1) return;
         body.lastElementChild.remove();
         flush();
-        body.insertAdjacentHTML("beforeend", figure(block, true));
+        body.insertAdjacentHTML("beforeend", figure(block));
       }
 
       function addSmallFigure(block) {
@@ -522,6 +512,8 @@
           html = `<span class="speaker">${escape(block.speaker)}</span> ${html}`;
         } else if (block.center) {
           cls = "center";
+        } else if (block.cont) {
+          cls = "cont";   // o resto de um parágrafo interrompido pela ilustração
         } else if (first && !/^[—–-]/.test(html)) {
           cls = "first";
         }

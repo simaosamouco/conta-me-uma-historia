@@ -47,12 +47,17 @@ window.BOOK = {
   },
   {
    "type": "p",
-   "html": "Entretanto uma luz mais forte começou a surgir entre as duas montanhas. Estava a amanhecer. Um pouco depois a pontinha do sol apareceu e iluminou a cara de Aurora. Os seus olhitos fecharam-se ligeiramente retendo<sup class=\"fn\" data-n=\"8\">8</sup> aquele momento mágico. Mas o melhor estava para chegar. Com o nascer do sol e com aquela chuvinha que caía lá longe, formou-se um lindo arco-íris que parecia nascer numa montanha e terminar na outra do outro lado."
+   "html": "Entretanto uma luz mais forte começou a surgir entre as duas montanhas. Estava a amanhecer. Um pouco depois a pontinha do sol apareceu e iluminou a cara de Aurora. Os seus olhitos fecharam-se ligeiramente retendo<sup class=\"fn\" data-n=\"8\">8</sup> aquele momento mágico."
   },
   {
    "type": "img",
    "src": "assets/books/ao-amanhecer/03.jpg",
    "ratio": 1.787
+  },
+  {
+   "type": "p",
+   "html": "Mas o melhor estava para chegar. Com o nascer do sol e com aquela chuvinha que caía lá longe, formou-se um lindo arco-íris que parecia nascer numa montanha e terminar na outra do outro lado.",
+   "cont": true
   },
   {
    "type": "p",

@@ -95,6 +95,8 @@ def story_html(book, note_href):
             out.append(f'<p class="speech"><span class="speaker">{esc(b["speaker"])}</span> {text}</p>')
         elif b.get("center"):
             out.append(f'<p class="center">{text}</p>')
+        elif b.get("cont"):
+            out.append(f'<p class="cont">{text}</p>')
         elif first and not re.match(r"^[—–-]", re.sub(r"<[^>]+>", "", text)):
             out.append(f'<p class="first">{text}</p>')
         else:
@@ -126,7 +128,7 @@ BOOK_CSS = """
 body { font-family: "Literata", Georgia, serif; color: #2b2420; line-height: 1.55; hyphens: auto; -webkit-hyphens: auto; }
 h1, h2, .fim, .imprint { font-family: "Young Serif", Georgia, serif; font-weight: normal; }
 p { margin: 0; text-indent: 1.4em; text-align: justify; }
-p.first, p.center, p.speech, p.gloss { text-indent: 0; }
+p.first, p.center, p.speech, p.gloss, p.cont { text-indent: 0; }
 p.first + p { clear: left; }
 p.first::first-letter { font-family: "Young Serif", Georgia, serif; float: left; font-size: 3.6em; line-height: 0.85; padding: 0.05em 0.08em 0 0; color: #cf4428; }
 p.center { text-align: center; font-style: italic; color: #6b5f55; margin: 0.4em 0; }
