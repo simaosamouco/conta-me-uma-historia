@@ -4,10 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Livro · Conta-me Uma História</title>
+  <script>
+    // Design antigo ou novo (kids.css), escolhido no botão de design; por omissão, o novo.
+    try { var desenho = localStorage.getItem("design"); } catch (e) {}
+    document.documentElement.dataset.design = desenho || "kids";
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=3">
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css?v=4">
+  <link rel="stylesheet" href="assets/kids.css?v=3">
   <style>
     :root {
       --table: #2a2521;
@@ -372,7 +379,7 @@
     }
   </style>
 </head>
-<body>
+<body data-page="livro">
   <header class="reader-bar">
     <a href="ler.html">← Histórias</a>
     <span class="title" id="bar-title"></span>
@@ -409,6 +416,7 @@
   <div class="note-pop" id="note-pop" role="dialog" aria-live="polite" hidden></div>
 
   <script src="assets/data.js?v=2"></script>
+  <script src="assets/design.js?v=1"></script>
   <script>
     // Tamanho da página (em px antes de escalar). No telemóvel usa-se uma página mais estreita.
     let PAGE_W = 520;
@@ -788,6 +796,7 @@
 
         await document.fonts.load('17.5px "Literata"');
         await document.fonts.load('46px "Young Serif"');
+        await document.fonts.load('800 46px "Baloo 2"');
         await document.fonts.ready;
 
         $("loading").remove();

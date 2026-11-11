@@ -1,0 +1,657 @@
+/* Design novo ("kids"): livro de recortes, com céu, autocolantes e fita-cola.
+   Só se aplica quando o <html> tem data-design="kids" (posto no <head> e mudado pelo botão de design).
+   O design antigo fica intacto em style.css; aqui só se mudam cores, letras e formas. */
+
+html[data-design="kids"] {
+  --paper: #fff6dc;
+  --paper-2: #ffe9a8;
+  --ink: #27254d;
+  --ink-soft: #5a5880;
+  --line: #dccf9f;
+  --apple: #e2412f;
+  --apple-dark: #c23220;
+  --leaf: #2f9e63;
+  --mustard: #ffc531;
+  --night: #3b2f8f;
+  --card: #fff;
+  --on-apple: #fff;
+  --frame: #fff;
+
+  --sky: #bfe8ff;
+  --pink: #ffb3d1;
+  --mint: #a4ebcd;
+  --lilac: #cdbdff;
+  --sun: #ffd84d;
+  --on-sun: #27254d;
+  --grass: #8fd67a;
+  --meadow: #1f7a4c;
+  --header: #ffd84d;
+  --footer: #27254d;
+  --dot: #f3e3b3;
+  --shadow: #27254d;
+
+  --font-display: "Baloo 2", "Young Serif", system-ui, sans-serif;
+  --font-body: "Andika", "Instrument Sans", system-ui, sans-serif;
+  --font-hand: "Patrick Hand", "Andika", cursive;
+
+  --radius: 18px;
+  /* Cantos tortos, como papel cortado à tesoura */
+  --blob: 26px 20px 28px 18px / 20px 28px 18px 26px;
+
+  --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 28' preserveAspectRatio='none'%3E%3Cpath d='M0 28V14Q35 -8 70 14T140 14V28Z'/%3E%3C/svg%3E");
+  --hills: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 70' preserveAspectRatio='none'%3E%3Cpath d='M0 70V40Q130 -6 270 36T540 30Q680 0 800 40V70Z'/%3E%3C/svg%3E");
+  --cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 62'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='34' cy='36' r='20'/%3E%3Ccircle cx='60' cy='26' r='24'/%3E%3Ccircle cx='86' cy='38' r='18'/%3E%3Crect x='16' y='36' width='88' height='22' rx='11'/%3E%3C/g%3E%3C/svg%3E");
+  --sun-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg stroke='%2327254d' stroke-width='3.5' stroke-linecap='round'%3E%3Cpath d='M60 6v16M60 98v16M6 60h16M98 60h16M22 22l11 11M87 87l11 11M22 98l11-11M87 33l11-11' fill='none'/%3E%3Ccircle cx='60' cy='60' r='27' fill='%23ffd84d'/%3E%3C/g%3E%3C/svg%3E");
+  --stars: radial-gradient(circle, #ffd84d 2px, transparent 2.6px) 12px 18px / 96px 88px,
+           radial-gradient(circle, #fff 1.4px, transparent 2px) 58px 52px / 132px 116px;
+}
+
+html[data-design="kids"][data-theme="dark"] {
+  --paper: #1a1b3d;
+  --paper-2: #2c2e66;
+  --ink: #fff3d1;
+  --ink-soft: #bdbbe0;
+  --line: #45477f;
+  --apple: #ff6b57;
+  --apple-dark: #ff8a78;
+  --leaf: #2c8a5a;
+  --mustard: #ffcf4a;
+  --night: #0f1030;
+  --card: #24265a;
+  --on-apple: #1a1b3d;
+  --frame: #fff3d1;
+
+  --sky: #232a70;
+  --pink: #8a3f72;
+  --mint: #1f6f5e;
+  --lilac: #4f43a0;
+  --sun: #ffd84d;
+  --grass: #1f5a48;
+  --meadow: #17523a;
+  --header: #2c2e66;
+  --footer: #0f1030;
+  --dot: #23254f;
+  --shadow: #07081c;
+
+  --cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 62'%3E%3Cg fill='%233a4199'%3E%3Ccircle cx='34' cy='36' r='20'/%3E%3Ccircle cx='60' cy='26' r='24'/%3E%3Ccircle cx='86' cy='38' r='18'/%3E%3Crect x='16' y='36' width='88' height='22' rx='11'/%3E%3C/g%3E%3C/svg%3E");
+  /* À noite o sol dá lugar à lua */
+  --sun-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath d='M76 20a42 42 0 1 0 24 66A36 36 0 0 1 76 20Z' fill='%23ffe9a0' stroke='%2307081c' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+@keyframes kids-spin { to { transform: rotate(360deg); } }
+@keyframes kids-wiggle { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+
+html[data-design="kids"] {
+  & body {
+    font-size: 17.5px;
+    line-height: 1.65;
+    background-image: radial-gradient(var(--dot) 1.6px, transparent 1.8px);
+    background-size: 26px 26px;
+  }
+  /* As faixas de cor saem da largura do texto; o que sobra para os lados não cria deslocação */
+  & body:not([data-page="livro"]) { overflow-x: clip; }
+
+  & h1, & h2, & h3 { font-weight: 800; letter-spacing: 0; line-height: 1.04; }
+
+  & :focus-visible { outline: 3px solid #7a5cf0; outline-offset: 3px; }
+  & ::selection { background: var(--sun); color: var(--on-sun); }
+
+  /* Etiqueta escrita à mão */
+  & .eyebrow.eyebrow {
+    display: inline-block;
+    font-family: var(--font-hand);
+    font-size: 19px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    line-height: 1.2;
+    color: var(--on-sun);
+    background: var(--sun);
+    border: 2px solid var(--shadow);
+    border-radius: var(--blob);
+    padding: 2px 14px 3px;
+    transform: rotate(-2deg);
+    margin-bottom: 16px;
+  }
+
+  /* ---------- Cabeçalho ---------- */
+
+  & .site-header { background: var(--header); border-bottom: 3px solid var(--shadow); }
+  & .brand { font-weight: 800; font-size: 23px; }
+  & .brand svg { width: 30px; height: 30px; transform-origin: 50% 80%; }
+  & .brand:hover svg { animation: kids-wiggle 0.5s ease; }
+
+  & .nav a { font-family: var(--font-display); font-weight: 600; font-size: 17px; padding: 5px 14px; border-radius: var(--blob); transition: transform 0.15s ease, background 0.15s ease; }
+  & .nav a:hover { background: var(--card); transform: rotate(-2deg); }
+  & .nav a[aria-current="page"] { background: var(--apple); color: var(--on-apple); transform: rotate(-2deg); box-shadow: 0 3px 0 var(--shadow); }
+
+  & .theme-toggle, & .nav-toggle { border: 2.5px solid var(--shadow); background: var(--card); box-shadow: 0 3px 0 var(--shadow); }
+  & .nav-toggle { font-family: var(--font-display); font-size: 16px; padding: 3px 14px; }
+  & .theme-toggle:hover { background: var(--paper-2); transform: rotate(20deg); }
+
+  @media (max-width: 760px) {
+    & .nav { background: var(--header); border-bottom: 3px solid var(--shadow); }
+    & .nav a { padding: 12px 0; border-radius: 0; border-bottom: 2px dashed var(--shadow); font-size: 19px; }
+    & .nav a:last-child { border-bottom: 0; }
+    & .nav a:hover { background: none; transform: none; }
+    & .nav a[aria-current="page"] { background: none; color: var(--apple); transform: none; box-shadow: none; }
+    & .brand { font-size: 20px; }
+  }
+  @media (max-width: 480px) {
+    & .brand { font-size: 17px; }
+    & .brand svg { width: 24px; height: 24px; }
+  }
+
+  /* ---------- Botões: grossos, de carregar ---------- */
+
+  & .btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    padding: 9px 24px 8px;
+    border: 3px solid var(--shadow);
+    border-radius: var(--blob);
+    box-shadow: 0 5px 0 var(--shadow);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+  & .btn:hover { transform: translateY(-2px) rotate(-1deg); box-shadow: 0 7px 0 var(--shadow); }
+  & .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--shadow); }
+  & .btn-primary { background: var(--apple); border-color: var(--shadow); color: var(--on-apple); }
+  & .btn-primary:hover { background: var(--apple); border-color: var(--shadow); }
+  & .btn-ghost { background: var(--card); color: var(--ink); }
+  & .btn-ghost:hover { background: var(--sun); color: var(--on-sun); }
+  & .btn-dark { background: var(--sun); border-color: var(--shadow); color: var(--on-sun); }
+  & .btn-dark:hover { background: var(--sun); }
+
+  /* ---------- Topo: céu, sol, nuvens e colinas ---------- */
+
+  & .hero {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--sky);
+    background-image: var(--cloud), var(--cloud), var(--cloud);
+    background-repeat: no-repeat;
+    background-position: 4% 34px, 46% 12px, 97% 46%;
+    background-size: 150px auto, 96px auto, 120px auto;
+    padding-bottom: clamp(120px, 14vw, 170px);
+  }
+  & .hero::before, & .hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+  & .hero::before {
+    bottom: 0;
+    height: 86px;
+    background: var(--grass);
+    -webkit-mask: var(--hills) repeat-x bottom / 800px 86px;
+    mask: var(--hills) repeat-x bottom / 800px 86px;
+  }
+  & .hero::after {
+    bottom: -1px;
+    height: 28px;
+    background: var(--paper);
+    -webkit-mask: var(--wave) repeat-x bottom / 140px 28px;
+    mask: var(--wave) repeat-x bottom / 140px 28px;
+  }
+  & .hero .wrap > * { position: relative; z-index: 1; }
+  & .hero .wrap::before {
+    content: "";
+    position: absolute;
+    top: 22px;
+    right: clamp(8px, 5vw, 80px);
+    width: clamp(84px, 11vw, 140px);
+    aspect-ratio: 1;
+    background: var(--sun-img) center / contain no-repeat;
+    animation: kids-spin 80s linear infinite;
+  }
+  @media (max-width: 480px) { & .hero .wrap::before { top: 14px; right: 4px; width: 62px; } }
+  &[data-theme="dark"] .hero { background-image: var(--cloud), var(--cloud), var(--cloud), var(--stars); background-position: 4% 34px, 46% 12px, 97% 46%, 0 0, 0 0; background-size: 150px auto, 96px auto, 120px auto, 96px 88px, 132px 116px; background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat; }
+  &[data-theme="dark"] .hero .wrap::before { animation: none; }
+
+  & .hero h1 { font-size: clamp(46px, 6vw, 80px); line-height: 0.98; margin-bottom: 20px; }
+  & .hero h1 em { color: var(--apple); }
+  & .hero h1 em::after {
+    bottom: -0.02em;
+    height: 0.2em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 8C22 2 34 13 54 7S90 2 110 8s34 5 52-1 26 2 36 3' fill='none' stroke='%23ff8a3d' stroke-width='4.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+  & .hero .lede { color: var(--ink); font-size: 19.5px; }
+
+  /* Nota do autor: tira de papel escrita à mão */
+  & .origin-note {
+    display: inline-block;
+    font-family: var(--font-hand);
+    font-size: 17.5px;
+    line-height: 1.35;
+    color: var(--ink);
+    background: var(--card);
+    border: 2px dashed var(--ink);
+    border-radius: 6px;
+    padding: 9px 16px;
+    margin-top: 34px;
+    transform: rotate(-1deg);
+  }
+
+  /* Capas presas com fita-cola */
+  & .cover-stack a {
+    border: 9px solid var(--frame);
+    border-bottom-width: 26px;
+    outline: 2.5px solid var(--shadow);
+    border-radius: 3px;
+    box-shadow: 7px 9px 0 rgba(39, 37, 77, 0.22);
+  }
+  & .cover-stack a::before {
+    content: "";
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    width: 92px;
+    height: 26px;
+    margin-left: -46px;
+    background: var(--pink);
+    opacity: 0.9;
+    transform: rotate(-5deg);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+  }
+  & .cover-stack a:nth-child(2)::before { background: var(--mint); transform: rotate(6deg); }
+  & .cover-stack a:nth-child(3)::before { background: var(--sun); transform: rotate(-2deg); }
+  & .cover-stack a:hover { transform: rotate(0) scale(1.04); }
+
+  /* ---------- Três portas: três cartões ---------- */
+
+  & .doors { border: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; padding-top: 28px; }
+  & .door {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 24px 24px 18px;
+    border: 3px solid var(--shadow);
+    border-radius: var(--blob);
+    background: var(--pink);
+    color: var(--ink);
+    box-shadow: 7px 7px 0 var(--shadow);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  & .door:nth-child(2) { background: var(--mint); transform: rotate(0.6deg); }
+  & .door:nth-child(3) { background: var(--lilac); }
+  & .door:hover { color: var(--ink); padding-left: 24px; transform: translate(-3px, -4px) rotate(-1.2deg); box-shadow: 11px 12px 0 var(--shadow); }
+  & .door .num { display: none; }
+  /* Ícone desenhado à mão, na cor da tinta */
+  & .door::before {
+    content: "";
+    width: 54px;
+    height: 54px;
+    background: var(--ink);
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+    --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6.6C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.6 2-1.6 5-2.1 8.5-1.6V5C17 4.5 14 5 12 6.6Zm0 0v13M6.5 9c1.3 0 2.3.2 3.2.7M6.5 12.5c1.3 0 2.3.2 3.2.7'/%3E%3C/svg%3E");
+  }
+  & .door:nth-child(2)::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 14v-2a8.5 8.5 0 0 1 17 0v2'/%3E%3Crect x='2.5' y='14' width='5' height='7' rx='1.8'/%3E%3Crect x='16.5' y='14' width='5' height='7' rx='1.8'/%3E%3C/svg%3E"); }
+  & .door:nth-child(3)::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20l1.2-4.7L16.5 4a2.1 2.1 0 0 1 3 3L8.2 18.3 4 20Zm10.5-13.5 3 3M3 22.5c2-1 3.5 1 5.5 0s3-1 5 0'/%3E%3C/svg%3E"); }
+  & .door h2 { font-size: clamp(34px, 3.6vw, 46px); }
+  & .door p { color: var(--ink); font-size: 16.5px; }
+  & .door .arrow { align-self: flex-end; margin-top: auto; font-size: 30px; line-height: 1; font-weight: 700; }
+  @media (max-width: 860px) {
+    & .doors { grid-template-columns: 1fr; gap: 22px; }
+    & .door:nth-child(2) { transform: none; }
+  }
+
+  /* ---------- Secções ---------- */
+
+  & .section-head p { color: var(--ink); }
+  & .section-head h2 { font-size: clamp(36px, 4.6vw, 58px); }
+
+  /* ---------- Destaque: noite estrelada ---------- */
+
+  & .featured { position: relative; background: var(--night) var(--stars); background: var(--stars), var(--night); color: #fff6dc; }
+  & .featured::before, & .featured::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: var(--paper);
+    -webkit-mask: var(--wave) repeat-x bottom / 140px 28px;
+    mask: var(--wave) repeat-x bottom / 140px 28px;
+    pointer-events: none;
+  }
+  & .featured::before { top: -1px; transform: scaleY(-1); }
+  & .featured::after { bottom: -1px; }
+  & .featured h2 { font-size: clamp(42px, 5.6vw, 72px); line-height: 0.98; }
+  & .featured p { color: #e6e0ff; }
+  & .featured img {
+    border: 10px solid #fff;
+    border-bottom-width: 30px;
+    outline: 2.5px solid #17153a;
+    border-radius: 3px;
+    transform: rotate(2.5deg);
+    box-shadow: 9px 11px 0 rgba(0, 0, 0, 0.3);
+  }
+  & .featured .btn { border-color: #17153a; box-shadow: 0 5px 0 #17153a; }
+  & .featured .btn-ghost { background: #fff6dc; color: #27254d; border-color: #17153a; }
+  & .featured .btn-ghost:hover { background: var(--sun); color: var(--on-sun); }
+
+  /* ---------- Sou criança / Já não sou criança ---------- */
+
+  & .tabs { border: 3px solid var(--shadow); background: var(--card); border-radius: 999px; padding: 5px; box-shadow: 0 4px 0 var(--shadow); }
+  & .tabs button { font-family: var(--font-display); font-weight: 700; font-size: 18px; padding: 5px 20px 4px; }
+  & .tabs button[aria-selected="true"] { background: var(--apple); color: var(--on-apple); }
+  & .tab-panel {
+    background: var(--card);
+    border: 3px dashed var(--ink);
+    border-radius: var(--blob);
+    padding: clamp(20px, 3vw, 34px) clamp(20px, 3.4vw, 40px) 14px;
+  }
+  & .tab-panel a, & .step a { color: var(--apple); font-weight: 700; text-decoration: underline wavy; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+  /* ---------- Como funciona ---------- */
+
+  & .steps { border: 0; gap: 26px; }
+  & .step {
+    position: relative;
+    margin: 0;
+    padding: 30px 24px 12px;
+    background: var(--card);
+    border: 3px solid var(--shadow);
+    border-radius: var(--blob);
+    box-shadow: 6px 6px 0 var(--pink);
+  }
+  & .step:nth-child(2) { box-shadow: 6px 6px 0 var(--mint); }
+  & .step:nth-child(3) { box-shadow: 6px 6px 0 var(--lilac); border-right: 3px solid var(--shadow); }
+  & .step .tag {
+    position: absolute;
+    top: -22px;
+    left: 20px;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 21px;
+    color: var(--on-sun);
+    background: var(--sun);
+    border: 3px solid var(--shadow);
+    border-radius: 50%;
+    transform: rotate(-8deg);
+  }
+  & .step h3 { font-size: 30px; }
+  & .step p { color: var(--ink); }
+  @media (max-width: 760px) {
+    & .steps { gap: 38px; }
+    & .step { border-bottom: 3px solid var(--shadow); padding-bottom: 12px; }
+  }
+
+  /* ---------- Enviar: um prado e um avião de papel ---------- */
+
+  & .participate { position: relative; background: var(--meadow); color: #fff; }
+  & .participate::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 28px;
+    background: var(--paper);
+    -webkit-mask: var(--wave) repeat-x bottom / 140px 28px;
+    mask: var(--wave) repeat-x bottom / 140px 28px;
+    transform: scaleY(-1);
+  }
+  & .participate .wrap { position: relative; }
+  & .participate .wrap::after {
+    content: "";
+    position: absolute;
+    right: var(--gutter);
+    top: 50%;
+    width: 250px;
+    height: 150px;
+    margin-top: -75px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M190 12 96 60l30 13 9 31 17-23 28 11Z' fill='%23fff' fill-opacity='.14'/%3E%3Cpath d='M190 12 126 73'/%3E%3Cpath d='M84 72C62 80 56 100 30 102S8 84 22 80s16 16-8 26' stroke-dasharray='1 9'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  @media (max-width: 1040px) { & .participate .wrap::after { display: none; } }
+  & .participate p { color: #e9f7ea; }
+  & .mail-link {
+    font-weight: 700;
+    color: #27254d;
+    background: #ffd84d;
+    border: 3px solid #17153a;
+    border-radius: var(--blob);
+    padding: 6px 20px 4px;
+    text-decoration: none;
+    transform: rotate(-1.5deg);
+    box-shadow: 0 5px 0 #17153a;
+    margin: 14px 0 22px;
+    transition: transform 0.15s ease;
+  }
+  & .mail-link:hover { transform: rotate(1deg) scale(1.03); }
+
+  /* ---------- Topo das páginas interiores: faixa de céu de lado a lado ---------- */
+
+  & .page-head {
+    position: relative;
+    padding-bottom: 64px;
+    margin-bottom: 26px;
+    background-color: var(--sky);
+    background-image: var(--cloud), var(--cloud);
+    background-repeat: no-repeat;
+    background-position: right 2% top 36px, right 30% bottom 62px;
+    background-size: 150px auto, 92px auto;
+    box-shadow: 0 0 0 100vmax var(--sky);
+    clip-path: inset(0 -100vmax);
+  }
+  & .page-head::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -1px;
+    width: 100vw;
+    height: 28px;
+    transform: translateX(-50%);
+    background: var(--paper);
+    -webkit-mask: var(--wave) repeat-x bottom / 140px 28px;
+    mask: var(--wave) repeat-x bottom / 140px 28px;
+  }
+  & .page-head h1 { font-size: clamp(46px, 6.4vw, 84px); }
+  & .page-head p { color: var(--ink); max-width: 30em; }
+  @media (max-width: 700px) { & .page-head { background-image: none; } }
+
+  /* ---------- Filtros ---------- */
+
+  & .toolbar { border: 0; padding: 12px 0 14px; margin-bottom: 30px; background: var(--paper); }
+  & .chip { font-family: var(--font-display); font-size: 16px; font-weight: 600; padding: 3px 16px 2px; border: 2.5px solid var(--shadow); background: var(--card); box-shadow: 0 3px 0 var(--shadow); transition: transform 0.1s ease, box-shadow 0.1s ease; }
+  & .chip:hover { transform: translateY(-1px); }
+  & .chip[aria-pressed="true"] { background: var(--sun); border-color: var(--shadow); color: var(--on-sun); transform: translateY(2px); box-shadow: 0 1px 0 var(--shadow); }
+  & .search { border: 2.5px solid var(--shadow); font-size: 16px; }
+  & .search:focus { border-color: var(--apple); }
+
+  /* ---------- Histórias: cartões com sombra de cor ---------- */
+
+  & .story-grid { gap: 34px 30px; }
+  & .story {
+    --pop: var(--pink);
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 3px solid var(--shadow);
+    border-radius: 22px;
+    padding: 12px 12px 16px;
+    box-shadow: 6px 6px 0 var(--pop);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  & .story:nth-child(4n + 2) { --pop: var(--mint); }
+  & .story:nth-child(4n + 3) { --pop: var(--sun); }
+  & .story:nth-child(4n + 4) { --pop: var(--lilac); }
+  & .story[hidden] { display: none; }
+  & .story:hover { transform: translate(-2px, -4px) rotate(-0.7deg); box-shadow: 10px 11px 0 var(--pop); }
+  & .story figure { border: 2.5px solid var(--shadow); border-radius: 13px; margin-bottom: 14px; }
+  & .story h3, & .story p, & .story-links { padding: 0 6px; }
+  & .story h3 { font-size: 25px; }
+  & .story p { color: var(--ink); flex: 1; }
+  & .story .age {
+    top: 8px;
+    left: 8px;
+    font-family: var(--font-hand);
+    font-size: 15.5px;
+    font-weight: 400;
+    color: var(--on-sun);
+    background: var(--sun);
+    border: 2px solid var(--shadow);
+    padding: 0 10px 1px;
+    transform: rotate(-4deg);
+  }
+  & .story-links { gap: 8px; }
+  & .story-links a { font-family: var(--font-display); font-size: 15px; font-weight: 600; padding: 1px 12px 0; border: 2px solid var(--shadow); border-radius: 999px; background: var(--paper); }
+  & .story-links a:first-child { background: var(--apple); color: var(--on-apple); }
+  & .story-links a:hover { background: var(--sun); border-color: var(--shadow); color: var(--on-sun); }
+  & .story > .dl-wrap { top: 22px; right: 22px; }
+  & .story .dl-toggle { border: 2px solid var(--shadow); background: var(--card); box-shadow: none; }
+  & .story .dl-toggle:hover, & .story .open .dl-toggle { background: var(--sun); color: var(--on-sun); }
+  & .dl-pop { border: 2.5px solid var(--shadow); border-radius: 16px; box-shadow: 5px 5px 0 var(--shadow); }
+
+  /* ---------- Histórias recebidas ---------- */
+
+  & .archive { border: 0; display: grid; gap: 12px; }
+  & .archive li {
+    --pop: var(--pink);
+    gap: 12px;
+    padding: 0 18px 0 14px;
+    background: var(--card);
+    border: 2.5px solid var(--shadow);
+    border-radius: 16px;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  & .archive li:nth-child(4n + 2) { --pop: var(--mint); }
+  & .archive li:nth-child(4n + 3) { --pop: var(--sun); }
+  & .archive li:nth-child(4n + 4) { --pop: var(--lilac); }
+  & .archive li[hidden] { display: none; }
+  & .archive li::before { content: ""; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--pop); border: 2px solid var(--shadow); }
+  & .archive li:hover { transform: translateX(5px); background: var(--paper-2); }
+  & .archive .row { padding: 13px 0 12px; }
+  & .archive .row:hover { background: none; padding-left: 0; padding-right: 0; }
+  & .archive .t { font-weight: 700; font-size: 21px; }
+  & .archive .b { color: var(--ink); }
+
+  /* ---------- Ouvir ---------- */
+
+  & .tracks { border: 0; display: grid; gap: 14px; }
+  & .track {
+    --pop: var(--pink);
+    grid-template-columns: 54px 1fr auto;
+    gap: 18px;
+    padding: 12px 20px 12px 14px;
+    background: var(--card);
+    border: 3px solid var(--shadow);
+    border-radius: 20px;
+    box-shadow: 5px 5px 0 var(--pop);
+  }
+  & .track:nth-child(4n + 2) { --pop: var(--mint); }
+  & .track:nth-child(4n + 3) { --pop: var(--sun); }
+  & .track:nth-child(4n + 4) { --pop: var(--lilac); }
+  & .track.playing, & .track.paused { background: var(--paper-2); }
+  & .track .play { width: 54px; height: 54px; border: 3px solid var(--shadow); background: var(--sun); color: var(--on-sun); box-shadow: 0 4px 0 var(--shadow); transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease; }
+  & .track .play:hover { background: var(--apple); color: var(--on-apple); }
+  & .track .play:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--shadow); }
+  & .track.playing .play { background: var(--apple); border-color: var(--shadow); color: var(--on-apple); }
+  & .track .play svg { width: 19px; height: 19px; }
+  & .track .t { font-weight: 700; font-size: 23px; }
+  & .track .t small { font-family: var(--font-hand); font-size: 16px; }
+  & .track .bar { margin: -2px 0 0; }
+  & .track .bar::before, & .track .bar span { height: 6px; top: 7px; border-radius: 3px; }
+  & .track .bar span::after { top: -5px; width: 16px; height: 16px; border: 2px solid var(--shadow); box-shadow: none; }
+
+  /* Dica: papelinho amarelo colado com fita */
+  & .tip {
+    position: relative;
+    font-family: var(--font-hand);
+    font-size: 20px;
+    line-height: 1.3;
+    color: #27254d;
+    background: #fff1a3;
+    border-radius: 3px;
+    padding: 20px 22px 16px;
+    max-width: 30em;
+    transform: rotate(-1deg);
+    box-shadow: 4px 5px 0 rgba(39, 37, 77, 0.16);
+  }
+  & .tip::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 24px; margin-left: -45px; background: var(--pink); opacity: 0.9; transform: rotate(-3deg); }
+  & .tip svg { width: 26px; height: 26px; margin-top: 0; }
+
+  /* ---------- Leitor de áudio ---------- */
+
+  & .player { border-bottom: 3px solid #17153a; }
+  & .p-label { font-family: var(--font-hand); font-size: 14px; letter-spacing: 0.02em; text-transform: none; }
+  & .p-title { font-weight: 700; font-size: 18px; }
+  & .p-main { background: var(--sun); color: #27254d; border: 2.5px solid #17153a; }
+  & .p-main:hover { background: #ffe680; }
+  & .p-progress::before, & .p-progress span { height: 5px; top: 5px; }
+
+  /* ---------- Rodapé ---------- */
+
+  & .site-footer { position: relative; border: 0; background: var(--footer); color: #cfcdea; padding-top: 44px; }
+  & .site-footer::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% - 1px);
+    height: 28px;
+    background: var(--footer);
+    -webkit-mask: var(--wave) repeat-x bottom / 140px 28px;
+    mask: var(--wave) repeat-x bottom / 140px 28px;
+  }
+  & .site-footer > .wrap a, & .terms-link { color: #fff6dc; }
+  & .terms { border: 3px solid var(--shadow); border-radius: 22px; box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.35); }
+
+  /* ---------- Consegues acertar? ---------- */
+
+  & .quiz-head img { border: 3px solid var(--shadow); box-shadow: 4px 4px 0 var(--pink); transform: rotate(-4deg); }
+  & .quiz .card { border-top: 3px dashed var(--ink); }
+  & .option { border-width: 2.5px; border-radius: 18px; box-shadow: 0 4px 0 var(--shadow); font-size: 18px; }
+  & .option:not(.right):not(.wrong) { border-color: var(--shadow); }
+  & .option:hover:not(:disabled) { transform: translateY(-2px) rotate(-0.4deg); }
+  & .option .letter { font-weight: 800; background: var(--sun); color: var(--on-sun); border: 2px solid var(--shadow); }
+  & .option .mark { font-family: var(--font-hand); font-size: 17px; font-weight: 400; }
+  & .dots span { width: 15px; height: 15px; border-width: 2px; border-color: var(--ink-soft); }
+  & .dots span.now { border-color: var(--ink); background: var(--sun); }
+  & .feedback p { font-weight: 800; font-size: 26px; }
+  & .result { border-top: 3px dashed var(--ink); }
+  & .result .score { font-weight: 800; color: var(--apple); }
+  & .result p { color: var(--ink); }
+
+  /* ---------- Livro: mesa azul-noite com estrelas ---------- */
+
+  & body[data-page="livro"] { background: var(--stars), #2b2a72; color: #fff6dc; }
+  & .reader-bar { font-size: 15px; background: #2b2a72; }
+  & .reader-controls { background: #2b2a72; }
+  & .progress { background: #4a48a0; }
+  & .reader-bar > a { white-space: nowrap; font-family: var(--font-display); font-weight: 700; font-size: 16px; opacity: 1; }
+  & .reader-bar .title { font-weight: 700; font-size: 19px; }
+  & .dl-btn { border: 2.5px solid #fff6dc; font-family: var(--font-display); font-weight: 600; }
+  & .dl-btn:hover, & .dl-btn[aria-expanded="true"] { background: var(--sun); border-color: var(--sun); color: #27254d; }
+  & .turn { width: 50px; height: 50px; font-size: 21px; font-weight: 700; color: #27254d; background: var(--sun); border: 3px solid #17153a; box-shadow: 0 4px 0 #17153a; transition: transform 0.1s ease, box-shadow 0.1s ease; }
+  & .turn:hover:not(:disabled) { background: #ffe680; color: #27254d; }
+  & .turn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #17153a; }
+  & .progress { height: 8px; border-radius: 4px; background: rgba(255, 246, 220, 0.25); }
+  & .progress span { background: var(--sun); border-radius: 4px; }
+  & .end-page .next-steps a { font-family: var(--font-display); font-size: 17px; border-width: 2.5px; padding: 7px 16px 6px; box-shadow: 0 3px 0 #2b2420; }
+  & .end-page .next-steps a.primary { border-color: #2b2420; }
+
+  /* ---------- Botão de design ---------- */
+
+  & .design-toggle { font-family: var(--font-display); font-size: 16px; font-weight: 600; padding: 5px 16px 4px; border: 2.5px solid var(--shadow); background: var(--card); color: var(--ink); box-shadow: 0 4px 0 var(--shadow); }
+  & .design-toggle:hover { background: var(--sun); color: var(--on-sun); }
+  & .design-toggle.inline { box-shadow: none; padding: 6px; border-color: #fff6dc; background: transparent; color: #fff6dc; }
+  & .design-toggle.inline:hover { background: var(--sun); border-color: var(--sun); color: #27254d; }
+
+  @media (prefers-reduced-motion: reduce) {
+    & .hero .wrap::before, & .brand:hover svg { animation: none; }
+    & .btn:hover, & .door:hover, & .story:hover, & .option:hover:not(:disabled) { transform: none; }
+  }
+}
+
+/* O leitor de áudio usa --ink como fundo e --paper como letra; aqui fica sempre azul-noite.
+   (Seletor à parte, com [data-theme], para ganhar à regra do modo escuro em style.css.) */
+html[data-design="kids"][data-theme] .player { --ink: #33308a; --paper: #fff6dc; }

@@ -788,3 +788,31 @@ p { margin: 0 0 1em; }
 .terms h2 { font-size: 28px; margin: 0 0 16px; }
 .terms p { margin: 0 0 14px; font-size: 16px; line-height: 1.55; color: var(--ink); }
 .terms form { margin-top: 22px; text-align: right; }
+
+/* ---------- Botão de design (antigo / novo) ---------- */
+
+.design-toggle {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.45);
+}
+.design-toggle:hover { background: var(--ink); color: var(--paper); }
+.design-toggle svg { width: 18px; height: 18px; flex: none; }
+/* No livro: só o ícone, na barra de cima */
+.design-toggle.inline { position: static; padding: 7px; border-color: rgba(239, 230, 214, 0.45); background: transparent; color: inherit; box-shadow: none; }
+.design-toggle.inline span { display: none; }
+.design-toggle.inline:hover { background: #efe6d6; color: #2a2521; }

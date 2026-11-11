@@ -9,11 +9,16 @@
     // Tema antes de desenhar a página, para não piscar: o escolhido no botão ou, se nenhum, o do sistema.
     try { var tema = localStorage.getItem("tema"); } catch (e) {}
     document.documentElement.dataset.theme = tema || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    // Design antigo ou novo (kids.css), escolhido no botão de design; por omissão, o novo.
+    try { var desenho = localStorage.getItem("design"); } catch (e) {}
+    document.documentElement.dataset.design = desenho || "kids";
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Young+Serif&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=3">
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css?v=4">
+  <link rel="stylesheet" href="assets/kids.css?v=3">
 </head>
 <body data-page="index">
   <div data-header></div>
@@ -142,6 +147,7 @@
 
   <script src="assets/data.js?v=2"></script>
   <script src="assets/site.js?v=3"></script>
+  <script src="assets/design.js?v=1"></script>
   <script>
     // Capas no topo
     const byBook = (slug) => ILLUSTRATED.find((s) => s.book === slug);
