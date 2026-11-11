@@ -162,8 +162,23 @@ function renderFooter() {
            As imagens que as ilustram foram criadas com IA.</p>
         <p>© 2013–2026 Conta-me Uma História<br>
            Criado por Fernando M. Barros · Aveiro, Portugal</p>
+        <p>Sítio atualizado em outubro de 2026<br>
+           <button class="terms-link" type="button">Termos de Utilização</button></p>
       </div>
+      <dialog class="terms" aria-labelledby="terms-title">
+        <h2 id="terms-title">Termos de Utilização</h2>
+        <p>As histórias e ilustrações disponibilizadas neste sítio constituem obras protegidas pelo direito de autor.</p>
+        <p>É permitida a sua utilização, podendo ser descarregadas ou imprimidas, desde que não sejam efetuadas quaisquer modificações aos documentos. As ilustrações também poderão ser utilizadas para fins apenas pessoais e nunca para fins comerciais.</p>
+        <p>Quaisquer direitos que não estejam aqui referidos estão reservados.</p>
+        <form method="dialog"><button class="btn btn-primary">Fechar</button></form>
+      </dialog>
     </footer>`;
+
+  // O rodapé não muda entre páginas, por isso o botão só precisa de um listener.
+  const terms = document.querySelector(".site-footer dialog.terms");
+  document.querySelector(".site-footer .terms-link").addEventListener("click", () => terms.showModal());
+  // Fecha também ao clicar fora da caixa.
+  terms.addEventListener("click", (e) => { if (e.target === terms) terms.close(); });
 }
 
 // MARK: Leitor de áudio
