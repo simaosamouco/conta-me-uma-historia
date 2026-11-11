@@ -348,6 +348,17 @@ p { margin: 0 0 1em; }
 
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
+/* Nota do autor: textos originais, ilustrações feitas com IA */
+.origin-note {
+  margin: 28px 0 0;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--apple);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+
 .cover-stack {
   position: relative;
   aspect-ratio: 1 / 0.92;
