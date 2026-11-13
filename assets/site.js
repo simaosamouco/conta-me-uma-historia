@@ -1,11 +1,8 @@
 // Cabeçalho, leitor de áudio e rodapé partilhados entre páginas,
 // e navegação sem recarregar a página (para o áudio não parar ao mudar de separador).
 
-const APPLE = `<svg viewBox="0 0 32 32" aria-hidden="true">
-  <path d="M16 9c-2-2.2-6.5-2.6-9 .4C4.3 12.6 5 19 8 23.6c1.7 2.6 3.8 4.4 6 3.6.9-.3 1.4-.6 2-.6s1.1.3 2 .6c2.2.8 4.3-1 6-3.6 3-4.6 3.7-11 1-14.2C22.5 6.4 18 6.8 16 9Z" fill="#cf4428"/>
-  <path d="M16 9c0-2.6.8-4.6 2.4-6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <path d="M17.4 6.2c1.8-1.9 4.6-2.2 6.6-1.4-1 2-3.6 3.4-6.6 1.4Z" fill="#2f5a45"/>
-</svg>`;
+// A maçã da autora (o logótipo do sítio).
+const APPLE = `<img src="assets/apple-logo.png" alt="" width="52" height="52">`;
 
 const ICONS = {
   play: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>',

@@ -118,8 +118,8 @@ html[data-design="kids"] {
 
   & .site-header { background: var(--header); border-bottom: 3px solid var(--shadow); }
   & .brand { font-weight: 800; font-size: 23px; }
-  & .brand svg { width: 30px; height: 30px; transform-origin: 50% 80%; }
-  & .brand:hover svg { animation: kids-wiggle 0.5s ease; }
+  & .brand img { width: 60px; height: 60px; transform-origin: 50% 80%; }
+  & .brand:hover img { animation: kids-wiggle 0.5s ease; }
 
   & .nav a { font-family: var(--font-display); font-weight: 600; font-size: 17px; padding: 5px 14px; border-radius: var(--blob); transition: transform 0.15s ease, background 0.15s ease; }
   & .nav a:hover { background: var(--card); transform: rotate(-2deg); }
@@ -138,8 +138,8 @@ html[data-design="kids"] {
     & .brand { font-size: 20px; }
   }
   @media (max-width: 480px) {
-    & .brand { font-size: 17px; }
-    & .brand svg { width: 24px; height: 24px; }
+    & .brand { font-size: 16px; }
+    & .brand img { width: 44px; height: 44px; }
   }
 
   /* ---------- Botões: grossos, de carregar ---------- */
@@ -647,7 +647,7 @@ html[data-design="kids"] {
   & .design-toggle.inline:hover { background: var(--sun); border-color: var(--sun); color: #27254d; }
 
   @media (prefers-reduced-motion: reduce) {
-    & .hero .wrap::before, & .brand:hover svg { animation: none; }
+    & .hero .wrap::before, & .brand:hover img { animation: none; }
     & .btn:hover, & .door:hover, & .story:hover, & .option:hover:not(:disabled) { transform: none; }
   }
 }

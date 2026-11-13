@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Livro · Conta-me Uma História</title>
+  <link rel="icon" href="assets/favicon.png" type="image/png" sizes="96x96">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <script>
     // Design antigo ou novo (kids.css), escolhido no botão de design; por omissão, o novo.
     try { var desenho = localStorage.getItem("design"); } catch (e) {}
@@ -13,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Young+Serif&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css?v=4">
-  <link rel="stylesheet" href="assets/kids.css?v=3">
+  <link rel="stylesheet" href="assets/style.css?v=6">
+  <link rel="stylesheet" href="assets/kids.css?v=5">
   <style>
     :root {
       --table: #2a2521;
@@ -304,10 +306,11 @@
     .title-page .dedication { font-family: "Literata", serif; font-style: italic; color: #6b5f55; font-size: 16px; margin-top: 10px; }
     .title-page.no-cover { justify-content: center; }
     .title-page.no-cover .mark { width: 64px; height: 64px; margin-bottom: 28px; }
+    .title-page .mark img { width: 100%; height: 100%; aspect-ratio: auto; margin: 0; border-radius: 0; }
     .title-page.no-cover h1 { font-size: 50px; }
     .title-page.no-cover .imprint { position: absolute; bottom: 48px; }
     .title-page .imprint { margin-top: auto; display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 15px; color: #6b5f55; }
-    .title-page .imprint svg { width: 20px; height: 20px; }
+    .title-page .imprint img { width: 26px; height: 26px; aspect-ratio: auto; margin: 0; border-radius: 0; }
 
     /* Página final */
     .end-page {
@@ -422,7 +425,7 @@
     let PAGE_W = 520;
     let PAGE_H = 740;
     const TURN_MS = 650;
-    const APPLE = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9c-2-2.2-6.5-2.6-9 .4C4.3 12.6 5 19 8 23.6c1.7 2.6 3.8 4.4 6 3.6.9-.3 1.4-.6 2-.6s1.1.3 2 .6c2.2.8 4.3-1 6-3.6 3-4.6 3.7-11 1-14.2C22.5 6.4 18 6.8 16 9Z" fill="#cf4428"/><path d="M16 9c0-2.6.8-4.6 2.4-6" stroke="#2b2420" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M17.4 6.2c1.8-1.9 4.6-2.2 6.6-1.4-1 2-3.6 3.4-6.6 1.4Z" fill="#2f5a45"/></svg>`;
+    const APPLE = `<img src="assets/apple-logo.png" alt="">`;
 
     const slug = new URLSearchParams(location.search).get("h") || "a-velha-mansao";
     const escape = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
