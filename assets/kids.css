@@ -73,12 +73,15 @@ html[data-design="kids"][data-theme="dark"] {
   --dot: #23254f;
   --shadow: #07081c;
 
-  --cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 62'%3E%3Cg fill='%233a4199'%3E%3Ccircle cx='34' cy='36' r='20'/%3E%3Ccircle cx='60' cy='26' r='24'/%3E%3Ccircle cx='86' cy='38' r='18'/%3E%3Crect x='16' y='36' width='88' height='22' rx='11'/%3E%3C/g%3E%3C/svg%3E");
+  /* No modo escuro o céu fica limpo: sem nuvens. */
+  --cloud: none;
   /* À noite o sol dá lugar à lua */
   --sun-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath d='M76 20a42 42 0 1 0 24 66A36 36 0 0 1 76 20Z' fill='%23ffe9a0' stroke='%2307081c' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 @keyframes kids-spin { to { transform: rotate(360deg); } }
+@keyframes kids-clouds-hero { to { background-position: 13% 34px, 37% 12px, 89% 46%; } }
+@keyframes kids-clouds-head { to { background-position: right 10% top 36px, right 21% bottom 62px; } }
 @keyframes kids-wiggle { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
 
 html[data-design="kids"] {
@@ -208,7 +211,8 @@ html[data-design="kids"] {
     animation: kids-spin 80s linear infinite;
   }
   @media (max-width: 480px) { & .hero .wrap::before { top: 14px; right: 4px; width: 62px; } }
-  &[data-theme="dark"] .hero { background-image: var(--cloud), var(--cloud), var(--cloud), var(--stars); background-position: 4% 34px, 46% 12px, 97% 46%, 0 0, 0 0; background-size: 150px auto, 96px auto, 120px auto, 96px 88px, 132px 116px; background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat; }
+  /* As nuvens passeiam devagar de um lado para o outro (só de dia: as estrelas ficam quietas). */
+  &[data-theme="light"] .hero { animation: kids-clouds-hero 28s ease-in-out infinite alternate; }
   &[data-theme="dark"] .hero .wrap::before { animation: none; }
 
   & .hero h1 { font-size: clamp(46px, 6vw, 80px); line-height: 0.98; margin-bottom: 20px; }
@@ -442,6 +446,7 @@ html[data-design="kids"] {
     box-shadow: 0 0 0 100vmax var(--sky);
     clip-path: inset(0 -100vmax);
   }
+  &[data-theme="light"] .page-head { animation: kids-clouds-head 24s ease-in-out infinite alternate; }
   & .page-head::after {
     content: "";
     position: absolute;
@@ -647,7 +652,7 @@ html[data-design="kids"] {
   & .design-toggle.inline:hover { background: var(--sun); border-color: var(--sun); color: #27254d; }
 
   @media (prefers-reduced-motion: reduce) {
-    & .hero .wrap::before, & .brand:hover img { animation: none; }
+    &[data-theme] .hero, &[data-theme] .page-head, & .hero .wrap::before, & .brand:hover img { animation: none; }
     & .btn:hover, & .door:hover, & .story:hover, & .option:hover:not(:disabled) { transform: none; }
   }
 }
